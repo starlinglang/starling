@@ -1,42 +1,53 @@
+const ohm = require("ohm-js");
+const extras = require("ohm-js/extras");
+const toAST = require("ohm-js/extras").toAST;
+
 const starlingGrammar = ohm.grammar(String.raw`
   Starling {
-    database = (space* outermost_scope_stmt space*)+
-    outermost_scope_stmt = import_stmt | const | disjoint | to_sub | proof_block | block
-    block = "block" space* "{" space* block_content+ space* "}"
-    block_content = space* ( disjoint | block | block_to_sub ) space*
-    block_inner = variable | axiom | essential_hyp
-    block_to_sub = math_symbol whitespace_or "=" whitespace_or block_inner
-    proof_block = "proof of " math_symbol space* "{" space* proof_content+ space* "}"
-    proof_content = space* ( proof_cell | inner )
-    proof_cell = math_symbol whitespace_or ";"
-    to_sub = math_symbol whitespace_or "=" whitespace_or inner
-    inner = variable | axiom | theorem | essential_hyp
-    essential_hyp = "assume " math_space_symbol ":" whitespace_or math_space_symbol ";"
-    theorem = math_space_symbol ":" whitespace_or  math_symbol ";"
-    axiom = "axiom " math_space_symbol whitespace_or ":" whitespace_or math_symbol whitespace_or ";"
-    variable = "fix " math_symbol whitespace_or ":" whitespace_or math_symbol whitespace_or ";"
-    disjoint = "distinct " const_char_comb_content whitespace_or math_symbol whitespace_or ";"
-    const = "define " const_char_comb_content math_symbol whitespace_or ";"
-    const_char_comb_content = const_char_comb_mult*
-    const_char_comb_mult = const_char_comb+
-    const_char_comb = math_symbol whitespace_or "," whitespace_or
-    import_stmt = "import " math_symbol import_alias? ";"
-    import_alias = " as " math_symbol
-    math_or_space = math_symbol | space
-    math_space_symbol = math_or_space+
-    math_symbol = const_symbol+
-    any_printable_ascii_except_dollar_newline =  "!" | "\"" | "#" | "%" | "&" | "'" | "(" | ")" | "*" | "+" | "," | "-" | "." |
-      "/" | digit | ":" | "<" | ">" | "?" | "@" | letter | "{" | "|" |
-      "}" | "~"
-    const_symbol = "!" | "\"" | "#" | "%" | "&" | "*" | "+" | "-" | "." | "(" | ")" |
-      "/" | digit  | "<" | ">" | "?" | "@" | letter | "|" | "~"
-    newline = "\n" | "\r \n" | "\r"
-    whitespace_or = whitespace_char_except_newline*
-    whitespace_char_except_newline = " "
-  }`);
+       Database = Outermost_scope_stmt+
+       Outermost_scope_stmt = import_stmt | Const | Disjoint | To_sub | Proof_block | Block | comment
+       Block_content = Disjoint | Block | Block_to_sub | comment
+       Block = "block"  "{" Block_content+  "}"
+       Block_to_sub = math_symbol  "="  Block_inner
+       Block_inner = Variable | Axiom | Essential_hyp
+       Proof_block = "proof of " math_symbol "{"  Proof_unit+  "}"
+       Proof_unit = comment | Proof_cell
+       Proof_cell = math_symbol  ";"
+       To_sub = math_symbol  "="  Inner
+       Inner = Variable | Axiom | Theorem | Essential_hyp
+       Essential_hyp = "assume " NonemptyListOf<math_symbol, ""> ":"  NonemptyListOf<math_symbol, ""> ";"
+       Theorem =  NonemptyListOf<math_symbol, "">  ":"   math_symbol ";"
+	    Axiom = "axiom " math_symbol  ":"  math_symbol  ";"
+       Variable = "fix " NonemptyListOf<VariableListItem, ",">  ";"
+       VariableListItem = math_symbol  ":" math_symbol
+       Disjoint = "distinct " NonemptyListOf<math_symbol, ","> ";"
+	   Const = "define " NonemptyListOf<math_symbol, ","> ";"
+       import_stmt = "import " any_printable_ascii_except_dollar_newline+ import_alias? ";"
+       import_alias = " as " math_symbol
+     	math_symbol = const_symbol+
+       any_printable_ascii_except_dollar_newline =  "!" | "\"" | "#" | "%" | "&" | "'" | "(" | ")" | "*" | "+" | "," | "-" | "." |
+         "/" | alnum | ":" | "<" | ">" | "?" | "@"  | "{" | "|" | "}" | "~"
+       const_symbol = "!" | "#" | "%" | "&" | "*" | "+" | "-" | "." | "(" | ")" |  "/" | alnum  | "<" | ">" | "?" | "@"  | "|" | "~"
+       comment = multiLineComment | singleLineComment
+	     sourceCharacter = any
+       lineTerminator = "\n" | "\r" | "\u2028" | "\u2029"
+       multiLineComment = "/*" (~"*/" sourceCharacter)* "*/"
+       singleLineComment = "//" (~lineTerminator sourceCharacter)*
+   }`);
 
 testString = `
+
+  import "set.mm";
+
   define 0, +, equals, implies, <, >, term, formula, provable;
+
+  // outermost scope comment
+
+  /*
+  A
+  multiLine
+  comment.
+  */
 
   tt = fix t: term;
   tr = fix r: term;
@@ -44,6 +55,7 @@ testString = `
   wp = fix p: formula;
   wq = fix r: formula;
 
+  distinct wp, wq;
 
   tze = axiom 0: term;
   tpl = axiom <t + r>: term;
@@ -58,10 +70,10 @@ testString = `
 	min = assume P: provable;
 	maj = assume <P implies Q>: provable;
 	mp = axiom Q: provable;
+	// comment inside block
   }
 
   th1 = t equals t: provable;
-
 
 
   proof of th1 {
@@ -99,7 +111,53 @@ testString = `
 	a1;
 	mp;
 	mp;
+	//comment inside proof
   }
 `;
 
-console.log(starlingGrammar.match(testString).succeeded());
+let matched = starlingGrammar.match(testString, "Database");
+
+const ast = toAST(matched);
+
+let filename_imports = [];
+let constants = [];
+let disjoint = [];
+
+let fixed_variables = [];
+let variables = [];
+let variable_template = { label: "", math_symbol: "", type: "" };
+let essential_hypotheses = [];
+let axioms = [];
+let proof_body_template = [];
+
+let unlabeled_array_count = 0;
+
+for (let i = 0; i < ast.length; i++) {
+  const entry = ast[i];
+
+  switch (true) {
+    // Handle import statements
+    case typeof entry === "string" && entry.includes("import"):
+      const match = entry.match(/"([^"]+)"/);
+      if (match) {
+        filename_imports.push(match[1]);
+      }
+      break;
+
+    // Handle unlabeled arrays (constants or disjoint)
+    case Array.isArray(entry) &&
+      !entry.some((item) => typeof item === "object" && item.type):
+      if (unlabeled_array_count === 0) {
+        constants = Array.isArray(entry) ? entry.join(" ") : entry;
+      } else if (unlabeled_array_count === 1) {
+        disjoint = Array.isArray(entry) ? entry.join(" ") : entry;
+      }
+      unlabeled_array_count++;
+      break;
+
+    default:
+      break;
+  }
+}
+
+console.log(disjoint);
