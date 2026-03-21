@@ -15,17 +15,17 @@ const starlingGrammar = ohm.grammar(String.raw`
        Proof_cell = math_symbol  ";"
        To_sub = math_symbol  "="  Inner
        Inner = Variable | Axiom | Theorem | Essential_hyp
-       Essential_hyp = "assume " NonemptyListOf<math_symbol, ""> ":"  NonemptyListOf<math_symbol, ""> ";"
+       Essential_hyp = "assume" NonemptyListOf<math_symbol, ""> ":"  math_symbol ";"
        Theorem =  NonemptyListOf<math_symbol, "">  ":"   math_symbol ";"
-	    Axiom = "axiom " math_symbol  ":"  math_symbol  ";"
-       Variable = "fix " NonemptyListOf<VariableListItem, ",">  ";"
+	     Axiom = "axiom" math_symbol  ":"  math_symbol  ";"
+       Variable = "fix" VariableListItem  ";"
        VariableListItem = math_symbol  ":" math_symbol
-       Disjoint = "distinct " NonemptyListOf<math_symbol, ","> ";"
-	   Const = "define " NonemptyListOf<math_symbol, ","> ";"
-       import_stmt = "import " any_printable_ascii_except_dollar_newline+ import_alias? ";"
+       Disjoint = "distinct" NonemptyListOf<math_symbol, ","> ";"
+	     Const = "define" NonemptyListOf<math_symbol, ","> ";"
+       import_stmt = "import \"" any_printable_ascii_except_dollar_newline+ "\"" import_alias? ";"
        import_alias = " as " math_symbol
-     	math_symbol = const_symbol+
-       any_printable_ascii_except_dollar_newline =  "!" | "\"" | "#" | "%" | "&" | "'" | "(" | ")" | "*" | "+" | "," | "-" | "." |
+     	 math_symbol = const_symbol+
+       any_printable_ascii_except_dollar_newline =  "!"  | "#" | "%" | "&" | "'" | "(" | ")" | "*" | "+" | "," | "-" | "." |
          "/" | alnum | ":" | "<" | ">" | "?" | "@"  | "{" | "|" | "}" | "~"
        const_symbol = "!" | "#" | "%" | "&" | "*" | "+" | "-" | "." | "(" | ")" |  "/" | alnum  | "<" | ">" | "?" | "@"  | "|" | "~"
        comment = multiLineComment | singleLineComment
@@ -36,13 +36,9 @@ const starlingGrammar = ohm.grammar(String.raw`
    }`);
 
 testString = `
-
   import "set.mm";
-
   define 0, +, equals, implies, <, >, term, formula, provable;
-
   // outermost scope comment
-
   /*
   A
   multiLine
@@ -67,14 +63,13 @@ testString = `
   a2 =  axiom <t+0>: provable;
 
   block {
-	min = assume P: provable;
-	maj = assume <P implies Q>: provable;
-	mp = axiom Q: provable;
-	// comment inside block
+      min = assume P: provable;
+      maj = assume <P implies Q>: provable;
+      mp = axiom Q: provable;
+      // comment inside block
   }
 
   th1 = t equals t: provable;
-
 
   proof of th1 {
 	tt;
@@ -111,53 +106,115 @@ testString = `
 	a1;
 	mp;
 	mp;
-	//comment inside proof
   }
+
 `;
 
-let matched = starlingGrammar.match(testString, "Database");
+let actions = {
+  Database(stmts) {
+    return stmts.children.map((c) => c.makeAST());
+  },
 
-const ast = toAST(matched);
+  import_stmt(one, name, three, four, five) {
+    return { field: "import_stmt", value: name.sourceString };
+  },
+  Const(one, list, semicolon) {
+    let string_consts = list.asIteration().children.map((c) => c.sourceString);
+    return { field: "constant_stmt", value: string_consts };
+  },
+  Variable(one, list, three) {
+    let childAST = list.makeAST();
+    return childAST;
+  },
+  VariableListItem(variable, two, type) {
+    let vari = variable.sourceString;
+    let typ = type.sourceString;
+    return { field: "variable-stmt", variable: vari, type: typ };
+  },
+  Axiom(one, stmt, three, type, five) {
+    let axiomatic = stmt.sourceString;
+    let typ = type.sourceString;
 
-let filename_imports = [];
-let constants = [];
-let disjoint = [];
+    return { field: "axiom", statement: axiomatic, type: typ };
+  },
+  Theorem(statement, three, type, four) {
+    let stmt = statement.asIteration().children.map((c) => c.sourceString);
+    let ind = stmt.indexOf("axiom");
+    let fld = "axiom";
 
-let fixed_variables = [];
-let variables = [];
-let variable_template = { label: "", math_symbol: "", type: "" };
-let essential_hypotheses = [];
-let axioms = [];
-let proof_body_template = [];
+    if (ind > -1) {
+      stmt.splice(ind, 1);
+    } else {
+      fld = "theorem";
+    }
+    let typ = type.sourceString;
+    return { field: fld, statement: stmt, type: typ };
+  },
+  Essential_hyp(one, assumed, three, type, five) {
+    let assumption = assumed.sourceString;
+    let typ = type.sourceString;
+    let objet = { field: "essential-stmt", statement: assumption, type: typ };
+    return objet;
+  },
+  Disjoint(one, list, semicolon) {
+    return { field: "disjoint", value: list.sourceString.split(",") };
+  },
+  To_sub(label, two, inner) {
+    let name = label.sourceString;
+    let a = inner.makeAST();
+    return { label: name, inside: a };
+  },
+  Inner(inside) {
+    return inside.makeAST();
+  },
+  Proof_block(one, thm_name, three, proof_content_array, five) {
+    let theorem = thm_name.sourceString;
+    let prf = proof_content_array
+      .asIteration()
+      .children.map((c) => c.makeAST());
+    return { field: "proof", thm: theorem, proof: prf };
+  },
+  Proof_cell(name, semicolon) {
+    let name_i = name.sourceString;
+    return name_i;
+  },
+  Block(one, two, list, four) {
+    return {
+      field: "block",
+      value: list.asIteration().children.map((c) => c.makeAST()),
+    };
+  },
+  Block_inner(c) {
+    return c;
+  },
+  Block_content(child) {
+    return child.makeAST();
+  },
+  Block_to_sub(label, two, inner) {
+    let name = label.sourceString;
+    return {
+      label: name,
+      inside: inner.children.map((c) => c.makeAST()),
+    };
+  },
+  _terminal() {
+    return;
+  },
+  _iter(...children) {
+    return;
+  },
+  NonemptyListOf(one, two, three) {
+    return;
+  },
+  singleLineComment(one, two) {
+    return "single_line_comment";
+  },
+  multiLineComment(one, two, three) {
+    return "multiline_comment";
+  },
+};
+const s = starlingGrammar.createSemantics().addOperation("makeAST", actions);
+const matchResult = starlingGrammar.match(testString);
+const adapter = s(matchResult).makeAST();
 
-let unlabeled_array_count = 0;
-
-for (let i = 0; i < ast.length; i++) {
-  const entry = ast[i];
-
-  switch (true) {
-    // Handle import statements
-    case typeof entry === "string" && entry.includes("import"):
-      const match = entry.match(/"([^"]+)"/);
-      if (match) {
-        filename_imports.push(match[1]);
-      }
-      break;
-
-    // Handle unlabeled arrays (constants or disjoint)
-    case Array.isArray(entry) &&
-      !entry.some((item) => typeof item === "object" && item.type):
-      if (unlabeled_array_count === 0) {
-        constants = Array.isArray(entry) ? entry.join(" ") : entry;
-      } else if (unlabeled_array_count === 1) {
-        disjoint = Array.isArray(entry) ? entry.join(" ") : entry;
-      }
-      unlabeled_array_count++;
-      break;
-
-    default:
-      break;
-  }
-}
-
-console.log(disjoint);
+console.dir(adapter, { depth: null });
