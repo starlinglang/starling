@@ -35,32 +35,24 @@ const starlingGrammar = ohm.grammar(String.raw`
        singleLineComment = "//" (~lineTerminator sourceCharacter)*
    }`);
 
-testString = `
+let testSuite = `
   import "set.mm";
   define 0, +, equals, implies, <, >, term, formula, provable;
-  // outermost scope comment
-  /*
-  A
-  multiLine
-  comment.
-  */
-
   tt = fix t: term;
   tr = fix r: term;
   ts = fix s: term;
-  wp = fix p: formula;
-  wq = fix r: formula;
-
-  distinct wp, wq;
+  wp = fix P: formula;
+  wq = fix Q: formula;
 
   tze = axiom 0: term;
   tpl = axiom <t + r>: term;
-  weq = axiom t - r: term;
-  wim = axiom <P implies Q>: term;
+  weq = axiom t equals r: formula;
+  wim = axiom <P implies Q>: formula;
 
+  // distinct wp, wq;
 
   a1 =  axiom <t equals r implies <t equals s implies r equals s >>: provable;
-  a2 =  axiom <t+0>: provable;
+  a2 =  axiom <t+0> equals t: provable;
 
   block {
       min = assume P: provable;
@@ -107,8 +99,26 @@ testString = `
 	mp;
 	mp;
   }
-
 `;
+
+let testString = `
+  define < ,>, implies, formula;
+  wp = fix p: formula;
+  wq = fix q: formula;
+  wr = fix r: formula;
+  ws = fix s: formula;
+  w2 = axiom <p implies q>: formula;
+  wnew = <s implies < r implies p >> :formula;
+
+  proof of wnew {
+    ws;
+    wr;
+    wp;
+    w2;
+    w2;
+  }
+
+  `;
 
 let actions = {
   Database(stmts) {
@@ -172,7 +182,7 @@ let actions = {
     let prf = proof_content_array
       .asIteration()
       .children.map((c) => c.makeAST());
-    return { field: "proof", thm: theorem, proof: prf };
+    return { field: "proof", value: theorem, proof: prf };
   },
   Proof_cell(name, semicolon) {
     let name_i = name.sourceString;
@@ -213,8 +223,163 @@ let actions = {
     return "multiline_comment";
   },
 };
-const s = starlingGrammar.createSemantics().addOperation("makeAST", actions);
-const matchResult = starlingGrammar.match(testString);
-const adapter = s(matchResult).makeAST();
 
-console.dir(adapter, { depth: null });
+function resolveReferences(arr) {
+  const labelMap = {};
+
+  arr.forEach((item) => {
+    if (item.label) {
+      labelMap[item.label] = item;
+    }
+  });
+
+  arr.forEach((item) => {
+    if (item.field === "proof" && typeof item.value === "string") {
+      const label = item.value;
+      if (labelMap[label]) {
+        item.value = labelMap[label];
+      }
+    }
+  });
+
+  return arr;
+}
+
+function transpile(ast) {
+  const output = [];
+  const statements = {
+    imports: [],
+    constants: [],
+    variables: [],
+    labeled: [],
+    blocks: [],
+    theorems: [],
+    proofs: [],
+  };
+
+  // First pass: collect and categorize statements
+  for (const item of ast) {
+    if (typeof item === "string") {
+      // Skip comments
+      if (item === "single_line_comment" || item === "multiline_comment") {
+        continue;
+      }
+    } else if (item.field === "import_stmt") {
+      statements.imports.push(item);
+    } else if (item.field === "constant_stmt") {
+      statements.constants = item.value;
+    } else if (item.field === "variable-stmt") {
+      statements.variables.push(item);
+    } else if (item.label && item.inside) {
+      if (item.inside.field === "variable-stmt") {
+        statements.labeled.push(item);
+      } else if (item.inside.field === "block") {
+        statements.blocks.push(item);
+      } else if (item.inside.field === "theorem") {
+        statements.theorems.push(item);
+      } else {
+        statements.labeled.push(item);
+      }
+    } else if (item.field === "disjoint") {
+      statements.labeled.push(item);
+    } else if (item.field === "block") {
+      statements.blocks.push(item);
+    } else if (item.field === "proof") {
+      statements.proofs.push(item);
+    }
+  }
+
+  // Generate imports section
+  for (const importItem of statements.imports) {
+    output.push(`$[ ${importItem.value} $]`);
+  }
+
+  // Generate constants section
+  if (statements.constants.length > 0) {
+    output.push(`$c ${statements.constants.join(" ")} $.`);
+  }
+
+  // Generate variables section
+  const allVariables = [];
+  for (const item of statements.labeled) {
+    if (item.inside && item.inside.field === "variable-stmt") {
+      allVariables.push(item.inside.variable);
+    }
+  }
+  if (allVariables.length > 0) {
+    output.push(`$v ${allVariables.join(" ")} $.`);
+  }
+
+  // Generate labeled statements (variable declarations, axioms, etc.)
+  for (const item of statements.labeled) {
+    if (item.inside && item.inside.field === "variable-stmt") {
+      const { variable, type } = item.inside;
+      output.push(`${item.label} $f ${type} ${variable} $.`);
+    } else if (item.field === "disjoint") {
+      output.push(`$d ${item.value.join(" ")} $.`);
+    } else if (item.inside && item.inside.field === "axiom") {
+      const { statement, type } = item.inside;
+      const stmt = Array.isArray(statement) ? statement.join(" ") : statement;
+      output.push(`${item.label} $a ${type} ${stmt} $.`);
+    }
+  }
+
+  // Generate blocks
+  for (const block of statements.blocks) {
+    output.push("${");
+    for (const blockItem of block.value) {
+      if (typeof blockItem === "string") {
+        if (
+          blockItem === "single_line_comment" ||
+          blockItem === "multiline_comment"
+        ) {
+          continue;
+        }
+      } else if (blockItem.label && blockItem.inside) {
+        if (Array.isArray(blockItem.inside)) {
+          // Block with essential statements or axioms
+          for (const stmt of blockItem.inside) {
+            if (stmt.field === "essential-stmt") {
+              output.push(
+                `${blockItem.label} $e ${stmt.type} ${stmt.statement} $.`,
+              );
+            } else if (stmt.field === "axiom") {
+              output.push(
+                `${blockItem.label} $a ${stmt.type} ${stmt.statement} $.`,
+              );
+            }
+          }
+        }
+      }
+    }
+    output.push("$}");
+  }
+
+  // Generate theorems
+  for (const item of statements.theorems) {
+    if (item.inside && item.inside.field === "theorem") {
+      const { statement, type } = item.inside;
+      const stmt = Array.isArray(statement) ? statement.join(" ") : statement;
+      output.push(`${item.label} $p ${type} ${stmt} $= `);
+    }
+  }
+
+  // Generate proofs
+  for (const proofItem of statements.proofs) {
+    if (proofItem.proof && Array.isArray(proofItem.proof)) {
+      const proofSteps = proofItem.proof.join(" ");
+      // Append proof steps to the last line (theorem declaration)
+      if (output.length > 0) {
+        output[output.length - 1] += proofSteps + "\n$.";
+      }
+    }
+  }
+
+  return output.join("\n");
+}
+
+const s = starlingGrammar.createSemantics().addOperation("makeAST", actions);
+const matchResult = starlingGrammar.match(testSuite);
+const adapter = s(matchResult).makeAST();
+const ast = resolveReferences(adapter);
+console.log(transpile(ast), "\n\n");
