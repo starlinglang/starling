@@ -1,0 +1,16 @@
+{
+  "name": "starling_ide",
+  "version": "1.0.0",
+  "description": "The code editor for the Starling language.",
+  "repository": {
+    "type": "git",
+    "url": "github.com/starlinglang/starling"
+  },
+  "license": "MIT",
+  "author": "",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  }
+}
