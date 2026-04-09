@@ -5,15 +5,17 @@
   "license": "MIT",
   "author": "enderverse",
   "type": "commonjs",
-  "main": "index.js",
+  "source": "index.js",
+  "main": "../ide/editor/lang.mjs",
   "scripts": {
     "start": "node index.js",
-    "build": "npx esbuild index.js --bundle --minify --target=chrome58,firefox57,safari20,edge18 --outfile=../ide/editor/lang.js"
+    "watch": "parcel watch",
+    "build": "parcel build"
   },
   "dependencies": {
     "ohm-js": "^17.5.0"
   },
   "devDependencies": {
-    "esbuild": "^0.28.0"
+    "parcel": "^2.16.4"
   }
 }

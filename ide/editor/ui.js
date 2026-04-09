@@ -1,51 +1,94 @@
 // --- State Management ---
 
-// Default state for files
 const defaultFiles = [
   {
-    id: "main-star",
-    name: "Main.star",
-    path: "src/Main.star",
+    id: "long-star",
+    name: "long.star",
+    path: "src/long.star",
     x: 100,
     y: 100,
-    code: `<span class="kwd">import</span> starling.core
-
-<span class="kwd">function</span> <span class="fn">prove_identity</span>(x) {
-<span class="com"># Check initial state</span>
-<span class="kwd">assert</span> x == x;
-<span class="kwd">return</span> <span class="str">Success</span>;
+    code: `define 0, +, equals, implies, <, >, term, formula, provable;
+tt = fix t: term;
+tr = fix r: term;
+ts = fix s: term;
+wp = fix P: formula;
+wq = fix Q: formula;
+tze = axiom 0: term;
+tpl = axiom <t + r>: term;
+weq = axiom t equals r: formula;
+wim = axiom <P implies Q>: formula;
+distinct wp, wq;
+a1 =  axiom <t equals r implies <t equals s implies r equals s >>: provable;
+a2 =  axiom <t+0> equals t: provable;
+block {
+min = assume P: provable;
+maj = assume <P implies Q>: provable;
+mp = axiom Q: provable;
 }
-
-<span class="kwd">lemma</span> <span class="fn">reflection</span>() {
-<span class="kwd">forall</span> a. a == a;
+th1 = t equals t: provable;
+proof of th1 {
+tt;
+tze;
+tpl;
+tt;
+weq;
+tt;
+tt;
+weq;
+tt;
+a2;
+tt;
+tze;
+tpl;
+tt;
+weq;
+tt;
+tze;
+tpl;
+tt;
+weq;
+tt;
+tt;
+weq;
+wim;
+tt;
+a2;
+tt;
+tze;
+tpl;
+tt;
+tt;
+a1;
+mp;
+mp;
 }`,
   },
   {
-    id: "parser-star",
-    name: "Parser.star",
-    path: "src/Parser.star",
-    x: 800,
-    y: 500,
-    code: `<span class="kwd">module</span> parser
-
-<span class="kwd">struct</span> <span class="fn">Token</span> {
-<span class="kwd">type</span>: string;
-<span class="kwd">value</span>: string;
-<span class="kwd">loc</span>: SourceRange;
-}
-
-<span class="kwd">function</span> <span class="fn">lex</span>(input) {
-<span class="com"># Tokenization logic</span>
-<span class="kwd">return</span> tokens;
+    id: "short-star",
+    name: "short.star",
+    path: "src/short.star",
+    x: 850,
+    y: 200,
+    code: `define <, >, implies, formula;
+wp = fix p: formula;
+wq = fix q: formula;
+wr = fix r: formula;
+ws = fix s: formula;
+w2 = axiom <p implies q>: formula;
+wnew = <s implies < r implies p >> :formula;
+proof of wnew {
+ws;
+wr;
+wp;
+w2;
+w2;
 }`,
   },
 ];
 
-// Load state or use default
 let filesState =
   JSON.parse(localStorage.getItem("starling_files")) || defaultFiles;
 
-// Canvas View State
 let canvasState = JSON.parse(localStorage.getItem("starling_canvas")) || {
   x: 0,
   y: 0,
@@ -58,7 +101,6 @@ const canvasWorld = document.getElementById("canvas-world");
 const fileTreeEl = document.getElementById("file-tree");
 
 // --- Initialization ---
-
 function init() {
   renderFileTree();
   renderCanvas();
@@ -67,39 +109,21 @@ function init() {
 }
 
 // --- File Tree Logic ---
-
 function renderFileTree() {
   fileTreeEl.innerHTML = "";
-
-  // Simple grouping by folder (hardcoded logic for demo)
-  const folders = {
-    src: { name: "src", files: [] },
-    core: { name: "core", files: [] }, // Just to show structure if needed
-  };
-
   filesState.forEach((file) => {
-    const parts = file.path.split("/");
-    const folder = parts.length > 1 ? parts[0] : "root";
-
-    // For this demo, we just list them with slight indentation based on path depth
     const indent = (file.path.split("/").length - 1) * 16;
-
     const item = document.createElement("div");
     item.className = "file-tree-item";
     item.style.paddingLeft = `${12 + indent}px`;
-    item.innerHTML = `
-          <span class="file-icon">📄</span>
-          ${file.name}
-      `;
+    item.innerHTML = `<span class="file-icon">📄</span> ${file.name}`;
     item.onclick = () => flyToContainer(file.id);
     fileTreeEl.appendChild(item);
   });
 }
 
 // --- Canvas Rendering ---
-
 function renderCanvas() {
-  // Remove existing containers
   const existing = canvasWorld.querySelectorAll(".file-container");
   existing.forEach((el) => el.remove());
 
@@ -111,80 +135,50 @@ function renderCanvas() {
     container.style.top = `${file.y}px`;
 
     container.innerHTML = `
-          <div class="container-header" data-id="${file.id}">
-              <div class="window-controls">
-                  <div class="dot"></div><div class="dot"></div><div class="dot"></div>
-              </div>
-              <div class="container-title" style="margin-left: 12px;">${file.name}</div>
-              <div class="window-controls">
-                   <span style="font-size: 14px; cursor: pointer;">✎</span>
-              </div>
-          </div>
-
-          <div class="module">
-              <div class="module-header">
-                  Source Editor
-              </div>
-              <div class="source-editor">
-                  ${file.code}
-              </div>
-          </div>
-
-          <div style="display: flex; border-top: 1px solid var(--color-border);">
-              <!-- Debugger Modules Stacked/Horizontal -->
-              <div style="flex: 1; border-right: 1px solid var(--color-border);">
-                  <div class="module-header">Memory</div>
-                  <div class="debugger-module">
-                      <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
-                          <span>Heap: 12.4MB</span>
-                          <span>Stable</span>
-                      </div>
-                      <div class="memory-bar"><div class="memory-fill"></div></div>
-                  </div>
-              </div>
-              <div style="flex: 1;">
-                  <div class="module-header">Stack Trace</div>
-                  <div class="debugger-module">
-                      <div class="stack-item"><span class="stack-num">0:</span> main()</div>
-                      <div class="stack-item"><span class="stack-num">1:</span> solve_lemma()</div>
-                      <div class="stack-item"><span class="stack-num">2:</span> check_ident()</div>
-                  </div>
-              </div>
-          </div>
-
-          <div class="module" style="background: #1A1A24; color: white; border-top: none;">
-              <div class="module-header" style="background: rgba(255,255,255,0.1); color: #aaa;">Terminal</div>
-              <div class="debugger-module">
-                  <div>$ starling verify Main.star</div>
-                  <div class="terminal-text">>> Verification success. (0.012s)</div>
-              </div>
-          </div>
-      `;
+<div class="container-header" data-id="${file.id}">
+<div class="window-controls">
+<div class="dot"></div><div class="dot"></div><div class="dot"></div>
+</div>
+<div class="container-title" style="margin-left: 12px;">${file.name}</div>
+<div class="window-controls">
+<span style="font-size: 14px; cursor: pointer;">✕</span>
+</div>
+</div>
+<div class="module source-editor-container">
+<div class="module-header">
+Source Editor
+</div>
+<textarea class="source-editor">${file.code}</textarea>
+</div>
+</div>
+`;
 
     canvasWorld.appendChild(container);
 
-    // Add drag listener to header
+    // Events
     const header = container.querySelector(".container-header");
     setupContainerDrag(container, header, file.id);
+
+    const textarea = container.querySelector(".source-editor");
+
+    textarea.addEventListener("input", () => {
+      file.code = textarea.value;
+      localStorage.setItem("starling_files", JSON.stringify(filesState));
+    });
   });
 }
 
 // --- Canvas Interactions (Pan & Zoom) ---
-
 function applyCanvasTransform() {
   canvasWorld.style.transform = `translate(${canvasState.x}px, ${canvasState.y}px) scale(${canvasState.scale})`;
 }
-
 function saveCanvasState() {
   localStorage.setItem("starling_canvas", JSON.stringify(canvasState));
 }
-
 function setupCanvasInteractions() {
   let isPanning = false;
   let startX, startY;
-
   canvasViewport.addEventListener("mousedown", (e) => {
-    // Only pan if clicking on the background, not a container
     if (e.target === canvasViewport || e.target === canvasWorld) {
       isPanning = true;
       startX = e.clientX - canvasState.x;
@@ -192,7 +186,6 @@ function setupCanvasInteractions() {
       canvasViewport.style.cursor = "grabbing";
     }
   });
-
   window.addEventListener("mousemove", (e) => {
     if (isPanning) {
       e.preventDefault();
@@ -202,12 +195,10 @@ function setupCanvasInteractions() {
       saveCanvasState();
     }
   });
-
   window.addEventListener("mouseup", () => {
     isPanning = false;
     canvasViewport.style.cursor = "grab";
   });
-
   canvasViewport.addEventListener(
     "wheel",
     (e) => {
@@ -215,9 +206,6 @@ function setupCanvasInteractions() {
       const zoomIntensity = 0.001;
       const delta = -e.deltaY * zoomIntensity;
       const newScale = Math.min(Math.max(0.2, canvasState.scale + delta), 3);
-
-      // Zoom towards mouse pointer logic (simplified for this demo to center zoom)
-      // A more robust implementation adjusts x/y based on mouse offset
       canvasState.scale = newScale;
       applyCanvasTransform();
       saveCanvasState();
@@ -227,48 +215,31 @@ function setupCanvasInteractions() {
 }
 
 // --- Container Drag Logic ---
-
 function setupContainerDrag(container, header, fileId) {
   let isDragging = false;
   let startX, startY;
   let initialLeft, initialTop;
-
   header.addEventListener("mousedown", (e) => {
     isDragging = true;
-    // Get current transform values
-    const rect = container.getBoundingClientRect();
-    // We need to account for scale when dragging
-    // Easier approach: Use the file state coordinates
-
     const file = filesState.find((f) => f.id === fileId);
     initialLeft = file.x;
     initialTop = file.y;
-
-    // Mouse position relative to the scaled canvas
-    // mouseX = (event.clientX - canvasX) / scale
     startX = (e.clientX - canvasState.x) / canvasState.scale;
     startY = (e.clientY - canvasState.y) / canvasState.scale;
-
-    e.stopPropagation(); // Prevent canvas panning
+    e.stopPropagation();
   });
-
   window.addEventListener("mousemove", (e) => {
     if (!isDragging) return;
-
     const currentMouseX = (e.clientX - canvasState.x) / canvasState.scale;
     const currentMouseY = (e.clientY - canvasState.y) / canvasState.scale;
-
     const dx = currentMouseX - startX;
     const dy = currentMouseY - startY;
-
     const file = filesState.find((f) => f.id === fileId);
     file.x = initialLeft + dx;
     file.y = initialTop + dy;
-
     container.style.left = `${file.x}px`;
     container.style.top = `${file.y}px`;
   });
-
   window.addEventListener("mouseup", () => {
     if (isDragging) {
       isDragging = false;
@@ -278,24 +249,13 @@ function setupContainerDrag(container, header, fileId) {
 }
 
 // --- Camera Fly-to Animation ---
-
 function flyToContainer(fileId) {
   const file = filesState.find((f) => f.id === fileId);
   if (!file) return;
-
-  // Target: Center the file in the viewport
   const viewportW = canvasViewport.clientWidth;
   const viewportH = canvasViewport.clientHeight;
-
-  // Assuming file width is approx 600px (from CSS)
-  const fileW = 600;
-  const fileH = 400; // Approx height
-
-  // Calculate target canvas translation
-  // We want: file.x + translateX = viewport_center_x
-  // translateX = viewport_center_x - file.x
-  // Note: Need to account for scale if we were zooming, assuming scale=1 for simplicity here or handling it
-
+  const fileW = 700;
+  const fileH = 500;
   const targetX =
     viewportW / 2 -
     file.x * canvasState.scale -
@@ -304,37 +264,68 @@ function flyToContainer(fileId) {
     viewportH / 2 -
     file.y * canvasState.scale -
     (fileH * canvasState.scale) / 2;
-
   animateCanvasTo(targetX, targetY);
 }
-
 function animateCanvasTo(targetX, targetY) {
   const startX = canvasState.x;
   const startY = canvasState.y;
-  const duration = 600; // ms
+  const duration = 600;
   const startTime = performance.now();
-
   function step(currentTime) {
     const elapsed = currentTime - startTime;
     const progress = Math.min(elapsed / duration, 1);
-
-    // Ease out cubic
     const ease = 1 - Math.pow(1 - progress, 3);
-
     canvasState.x = startX + (targetX - startX) * ease;
     canvasState.y = startY + (targetY - startY) * ease;
-
     applyCanvasTransform();
-
-    if (progress < 1) {
-      requestAnimationFrame(step);
-    } else {
-      saveCanvasState();
-    }
+    if (progress < 1) requestAnimationFrame(step);
+    else saveCanvasState();
   }
-
   requestAnimationFrame(step);
 }
 
-// Run
 init();
+
+function newFile() {
+  let date = new Date();
+  defaultFiles.push({
+    id: `new-star-${date}`,
+    name: `${date}.star`,
+    path: `src/${date}.star`,
+    x: 150,
+    y: 150,
+    code: `define 0, +, equals, implies, <, >, term, formula, provable;`,
+  });
+}
+init();
+
+let downloading = () => {
+  let savedData = defaultFiles;
+  const data = JSON.stringify(savedData);
+
+  // Pass the string to a Blob and turn it
+  // into an ObjectURL
+  const blob = new Blob([data], { type: "application/json" });
+  const jsonObjectUrl = URL.createObjectURL(blob);
+
+  // Create an anchor element, set it's
+  // href to be the Object URL we have created
+  // and set the download property to be the file name
+  // we want to set
+  const filename = "canvas.json";
+  const anchorEl = document.createElement("a");
+  anchorEl.href = jsonObjectUrl;
+  anchorEl.download = filename;
+
+  // There is no need to actually attach the DOM
+  // element but we do need to click on it
+  anchorEl.click();
+
+  // We don't want to keep a reference to the file
+  // any longer so we release it manually
+  URL.revokeObjectURL(jsonObjectUrl);
+};
+
+document.getElementById("newFile").addEventListener("click", newFile);
+
+document.getElementById("download").addEventListener("click", downloading);
