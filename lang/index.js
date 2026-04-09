@@ -4,7 +4,7 @@ const grammarString = require("./grammar.js").starlingGrammar;
 const actions = require("./syntaxtree.js").actions;
 const resolve = require("./syntaxtree.js").resolveReferences;
 const transpile = require("./mmgen.js").transpile;
-const { shortTest, longTest } = require("./tests.js");
+const { shortTest, longTest } = require("./tests/testing.js");
 
 let compile = (string) => {
   let langGrammar = ohm.grammar(grammarString);

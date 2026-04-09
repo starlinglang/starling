@@ -1,5 +1,5 @@
+// longTest.star
 let longTest = `
-  import "set.mm";
   define 0, +, equals, implies, <, >, term, formula, provable;
   tt = fix t: term;
   tr = fix r: term;
@@ -12,7 +12,6 @@ let longTest = `
   weq = axiom t equals r: formula;
   wim = axiom <P implies Q>: formula;
 
-  distinct wp, wq;
 
   a1 =  axiom <t equals r implies <t equals s implies r equals s >>: provable;
   a2 =  axiom <t+0> equals t: provable;
@@ -64,6 +63,7 @@ let longTest = `
   }
 `;
 
+//shortTest.star
 let shortTest = `
   define < ,>, implies, formula;
   wp = fix p: formula;
