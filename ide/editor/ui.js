@@ -288,7 +288,7 @@ init();
 
 function newFile() {
   let date = new Date();
-  defaultFiles.push({
+  filesState.push({
     id: `new-star-${date}`,
     name: `${date}.star`,
     path: `src/${date}.star`,
@@ -296,33 +296,19 @@ function newFile() {
     y: 150,
     code: `define 0, +, equals, implies, <, >, term, formula, provable;`,
   });
+  renderFileTree();
+  renderCanvas();
 }
-init();
 
 let downloading = () => {
-  let savedData = defaultFiles;
-  const data = JSON.stringify(savedData);
-
-  // Pass the string to a Blob and turn it
-  // into an ObjectURL
+  const data = JSON.stringify(filesState);
   const blob = new Blob([data], { type: "application/json" });
   const jsonObjectUrl = URL.createObjectURL(blob);
-
-  // Create an anchor element, set it's
-  // href to be the Object URL we have created
-  // and set the download property to be the file name
-  // we want to set
   const filename = "canvas.json";
   const anchorEl = document.createElement("a");
   anchorEl.href = jsonObjectUrl;
   anchorEl.download = filename;
-
-  // There is no need to actually attach the DOM
-  // element but we do need to click on it
   anchorEl.click();
-
-  // We don't want to keep a reference to the file
-  // any longer so we release it manually
   URL.revokeObjectURL(jsonObjectUrl);
 };
 
