@@ -1,0 +1,536 @@
+<!doctype html>
+
+<html class="light" lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+        <title>Starling | Proof Assistant for Mathematicians</title>
+        <meta
+            name="description"
+            content="Starling is a proof assistant designed for ease of use."
+        />
+        <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+        <link
+            href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&amp;family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&amp;display=swap"
+            rel="stylesheet"
+        />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+            rel="stylesheet"
+        />
+        <script id="tailwind-config">
+            tailwind.config = {
+                darkMode: "class",
+                theme: {
+                    extend: {
+                        colors: {
+                            "tertiary-fixed": "#e2dfff",
+                            "secondary-fixed": "#c3ecd0",
+                            "error-container": "#ffdad6",
+                            secondary: "#416650",
+                            "outline-variant": "#c1c8c2",
+                            "on-primary-fixed": "#002114",
+                            "surface-container-highest": "#e4e2dd",
+                            "on-primary": "#ffffff",
+                            "primary-container": "#1b4332",
+                            primary: "#012d1d",
+                            "surface-dim": "#dbdad5",
+                            "primary-fixed": "#c1ecd4",
+                            "tertiary-container": "#2607c2",
+                            "surface-container-lowest": "#ffffff",
+                            "on-tertiary-container": "#9e9cff",
+                            outline: "#717973",
+                            "inverse-primary": "#a5d0b9",
+                            "on-error": "#ffffff",
+                            "on-secondary-fixed": "#002111",
+                            "surface-variant": "#e4e2dd",
+                            "on-tertiary-fixed": "#0f0069",
+                            "secondary-container": "#c0e9ce",
+                            "tertiary-fixed-dim": "#c3c0ff",
+                            "on-tertiary": "#ffffff",
+                            surface: "#fbf9f4",
+                            "on-secondary-container": "#456a54",
+                            "on-secondary": "#ffffff",
+                            "on-surface": "#1b1c19",
+                            "on-error-container": "#93000a",
+                            "surface-bright": "#fbf9f4",
+                            "on-secondary-fixed-variant": "#2a4e3a",
+                            "surface-container-high": "#eae8e3",
+                            "inverse-surface": "#30312e",
+                            "secondary-fixed-dim": "#a7d0b5",
+                            "on-tertiary-fixed-variant": "#3323cc",
+                            "on-background": "#1b1c19",
+                            "on-primary-container": "#86af99",
+                            "surface-tint": "#3f6653",
+                            "surface-container-low": "#f5f3ee",
+                            "surface-container": "#f0eee9",
+                            error: "#ba1a1a",
+                            "inverse-on-surface": "#f2f1ec",
+                            tertiary: "#160088",
+                            background: "#fbf9f4",
+                            "on-surface-variant": "#414844",
+                            "on-primary-fixed-variant": "#274e3d",
+                            "primary-fixed-dim": "#a5d0b9",
+                        },
+                        borderRadius: {
+                            DEFAULT: "1rem",
+                            lg: "2rem",
+                            xl: "3rem",
+                            full: "9999px",
+                        },
+                        fontFamily: {
+                            headline: ["Newsreader", "serif"],
+                            body: ["Plus Jakarta Sans", "sans-serif"],
+                            label: ["Plus Jakarta Sans", "sans-serif"],
+                        },
+                    },
+                },
+            };
+        </script>
+        <style>
+            body {
+                font-family: "Plus Jakarta Sans", sans-serif;
+            }
+            .font-headline {
+                font-family: "Newsreader", serif;
+            }
+
+            /* Multi-layered shadow inspired by Josh W. Comeau & Cosha */
+            .deep-shadow {
+                box-shadow:
+                    0 1px 1px hsl(0deg 0% 0% / 0.011),
+                    0 2px 2px hsl(0deg 0% 0% / 0.011),
+                    0 5px 5px hsl(0deg 0% 0% / 0.011),
+                    0 10px 10px hsl(0deg 0% 0% / 0.011),
+                    0 18px 18px hsl(0deg 0% 0% / 0.011),
+                    0 33px 33px hsl(0deg 0% 0% / 0.011);
+            }
+
+            .layered-card-shadow {
+                box-shadow:
+                    0.3px 0.5px 0.7px hsl(var(--shadow-color) / 0.1),
+                    0.8px 1.6px 2px -0.8px hsl(var(--shadow-color) / 0.1),
+                    2.1px 4.1px 5.2px -1.7px hsl(var(--shadow-color) / 0.1),
+                    5px 10px 12.6px -2.5px hsl(var(--shadow-color) / 0.1);
+                --shadow-color: 160deg 5% 20%;
+            }
+
+            .lush-shadow {
+                box-shadow:
+                    0px 12px 24px -4px rgba(27, 28, 25, 0.04),
+                    0px 24px 48px -8px rgba(27, 28, 25, 0.08);
+            }
+
+            .glass-nav {
+                backdrop-filter: blur(20px);
+            }
+            .murmuration-mask {
+                mask-image: radial-gradient(
+                    circle at center,
+                    black,
+                    transparent 80%
+                );
+            }
+
+            /* Scroll Animation States */
+            .reveal {
+                opacity: 0;
+                transform: translateY(30px);
+                transition: all 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+            }
+            .reveal.active {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            .reveal-delay-1 {
+                transition-delay: 0.1s;
+            }
+            .reveal-delay-2 {
+                transition-delay: 0.2s;
+            }
+            .reveal-delay-3 {
+                transition-delay: 0.3s;
+            }
+        </style>
+    </head>
+    <body
+        class="bg-surface text-on-surface selection:bg-tertiary-fixed selection:text-tertiary"
+    >
+        <!-- TopNavBar -->
+        <nav
+            class="fixed top-0 w-full z-50 bg-[#fbf9f4]/80 dark:bg-[#1b1c19]/80 backdrop-blur-xl border-b border-outline-variant/10"
+        >
+            <div
+                class="flex justify-between items-center px-8 py-6 max-w-7xl mx-auto"
+            >
+                <a
+                    class="text-2xl font-semibold italic text-[#012d1d] dark:text-[#fbf9f4] tracking-tight hover:scale-105 transition-transform duration-300"
+                    href="/"
+                >
+                    Starling
+                </a>
+                <div class="flex gap-12 items-center">
+                    <a
+                        class="text-[#1b4332]/70 dark:text-[#fbf9f4]/70 font-medium hover:text-[#160088] transition-colors duration-300 text-sm tracking-wide"
+                        href="documentation.html"
+                        >Documentation</a
+                    >
+                    <a
+                        class="text-[#1b4332]/70 dark:text-[#fbf9f4]/70 font-medium hover:text-[#160088] transition-colors duration-300 text-sm tracking-wide"
+                        href="editor.html"
+                        >New</a
+                    >
+                </div>
+            </div>
+        </nav>
+        <main class="relative overflow-hidden">
+            <!-- Hero Section -->
+            <section
+                class="relative min-h-screen flex flex-col items-center justify-center pt-32 px-6 overflow-hidden"
+            >
+                <!-- Background Murmuration Effect -->
+                <div
+                    class="absolute inset-0 -z-10 opacity-20 murmuration-mask pointer-events-none"
+                >
+                    <svg
+                        fill="none"
+                        height="100%"
+                        viewbox="0 0 800 800"
+                        width="100%"
+                        xmlns="http://www.w3.org/2000/svg"
+                    >
+                        <circle
+                            cx="200"
+                            cy="300"
+                            fill="#012d1d"
+                            r="1.5"
+                        ></circle>
+                        <circle
+                            cx="210"
+                            cy="320"
+                            fill="#012d1d"
+                            r="1.5"
+                        ></circle>
+                        <circle cx="230" cy="315" fill="#160088" r="2"></circle>
+                        <circle
+                            cx="250"
+                            cy="340"
+                            fill="#012d1d"
+                            r="1.5"
+                        ></circle>
+                        <circle cx="280" cy="330" fill="#012d1d" r="1"></circle>
+                        <circle
+                            cx="300"
+                            cy="360"
+                            fill="#160088"
+                            r="2.5"
+                        ></circle>
+                        <circle
+                            cx="400"
+                            cy="400"
+                            fill="#012d1d"
+                            r="1.5"
+                        ></circle>
+                        <circle
+                            cx="420"
+                            cy="410"
+                            fill="#012d1d"
+                            r="1.5"
+                        ></circle>
+                        <path
+                            d="M100 600 Q 250 450 400 600 T 700 600"
+                            fill="none"
+                            stroke="#c1c8c2"
+                            stroke-width="0.5"
+                        ></path>
+                    </svg>
+                </div>
+                <div class="max-w-4xl text-center z-10 reveal">
+                    <span
+                        class="inline-block px-4 py-1.5 mb-8 text-xs font-bold uppercase tracking-[0.2em] text-on-surface-variant bg-surface-container-low rounded-full"
+                    >
+                        formal verification made accessible
+                    </span>
+                    <h1
+                        class="font-headline text-7xl md:text-8xl lg:text-9xl text-primary leading-[0.9] tracking-tight mb-12"
+                    >
+                        A proof assistant for the
+                        <span class="italic">mathematician</span>.
+                    </h1>
+                    <div
+                        class="flex flex-col md:flex-row items-center justify-center gap-8 mt-12 reveal reveal-delay-1"
+                    >
+                        <a
+                            class="px-12 py-5 bg-gradient-to-br from-primary to-primary-container text-on-primary rounded-xl font-semibold text-lg hover:scale-[1.02] transition-transform duration-500 lush-shadow"
+                            href="editor.html"
+                        >
+                            Start Formalizing
+                        </a>
+                        <p
+                            class="text-on-surface-variant max-w-xs text-left text-sm leading-relaxed border-l border-outline-variant/30 pl-6"
+                        >
+                            An interactive theorem prover designed for
+                            mathematical intuition, not just programming
+                            expertise.
+                        </p>
+                    </div>
+                </div>
+            </section>
+            <section class="py-48 px-8 max-w-7xl mx-auto">
+                <div class="grid lg:grid-cols-2 gap-24 items-center">
+                    <div class="relative group reveal">
+                        <div
+                            class="absolute -inset-8 bg-secondary-container/10 rounded-[3rem] blur-3xl group-hover:bg-tertiary-fixed/20 transition-colors duration-1000"
+                        ></div>
+                        <div class="relative rounded-xl overflow-hidden">
+                            <img
+                                alt="Starling code snippet"
+                                class="w-full aspect-[4/5] object-cover"
+                                src="src/assets/carbon.svg"
+                            />
+                        </div>
+                    </div>
+                    <div class="space-y-10 reveal reveal-delay-1">
+                        <h2
+                            class="font-headline text-5xl md:text-6xl text-primary leading-tight"
+                        >
+                            A Language for
+                            <span
+                                class="italic underline decoration-tertiary/20 underline-offset-8"
+                                >Insight</span
+                            >
+                        </h2>
+                        <p
+                            class="text-xl text-on-surface-variant font-light leading-relaxed"
+                        >
+                            Starling is a high-level proof assistant for
+                            mathematicians that makes it easier to formalize
+                            math proofs without a background in computer
+                            science. Built on top of Norman Megill's
+                            <strong>Metamath</strong> and inspired by the
+                            elegance of Rust, the Starling language offers a
+                            syntax that feels more natural to the human mind.
+                        </p>
+                        <div class="grid grid-cols-2 gap-12 pt-8">
+                            <div>
+                                <span
+                                    class="block text-4xl font-headline text-tertiary mb-2"
+                                    >INFINITE</span
+                                >
+                                <span
+                                    class="text-xs uppercase tracking-widest font-bold text-on-surface-variant"
+                                    >Project Canvas</span
+                                >
+                            </div>
+                            <div>
+                                <span
+                                    class="block text-4xl font-headline text-tertiary mb-2"
+                                    >INSTANT</span
+                                >
+                                <span
+                                    class="text-xs uppercase tracking-widest font-bold text-on-surface-variant"
+                                    >Visual Feedback</span
+                                >
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <!-- Bento Grid: Precision Section -->
+            <section class="py-48 bg-surface-container-low/50">
+                <div class="max-w-7xl mx-auto px-8">
+                    <div class="mb-24 text-center max-w-2xl mx-auto reveal">
+                        <h2 class="font-headline text-5xl text-primary mb-6">
+                            Designed for your workflow
+                        </h2>
+                        <p class="text-on-surface-variant">
+                            From undergraduate studies to advanced faculty
+                            research, Starling provides an environment for
+                            verifying your most complex conjectures.
+                        </p>
+                    </div>
+                    <div class="grid md:grid-cols-3 gap-8">
+                        <!-- Bento Item 1: Structured Code Editor -->
+                        <div
+                            class="md:col-span-2 bg-surface rounded-xl p-12 layered-card-shadow flex flex-col justify-center group hover:translate-y-[-8px] transition-all duration-500 border border-outline-variant/10 reveal"
+                        >
+                            <div class="max-w-2xl">
+                                <h3
+                                    class="font-headline text-4xl text-primary mb-6"
+                                >
+                                    Structured Code Editor
+                                </h3>
+                                <p
+                                    class="text-on-surface-variant text-lg leading-relaxed"
+                                >
+                                    The Starling code editor provides real-time
+                                    linting and structural guidance, ensuring
+                                    your formalizations remain clean and
+                                    logically sound. By prioritizing the
+                                    structural hierarchy of proofs, Starling
+                                    allows you to focus on the mathematics
+                                    rather than the syntax.
+                                </p>
+                            </div>
+                        </div>
+                        <!-- Bento Item 2: Metamath Core -->
+                        <div
+                            class="bg-primary text-on-primary rounded-xl p-12 layered-card-shadow flex flex-col justify-center relative overflow-hidden group hover:translate-y-[-8px] transition-all duration-500 reveal reveal-delay-1"
+                        >
+                            <div class="relative z-10">
+                                <h3 class="font-headline text-3xl mb-6">
+                                    Metamath Core
+                                </h3>
+                                <p
+                                    class="text-on-primary-container text-base leading-relaxed opacity-90"
+                                >
+                                    Built on the minimalist Metamath framework,
+                                    Starling inherits a foundation of trust and
+                                    decades of verified mathematics. It is a
+                                    bridge between the rigor of
+                                    computer-assisted proof and the elegance of
+                                    human thought.
+                                </p>
+                            </div>
+                        </div>
+                        <!-- Bento Item 3: Infinite Canvas -->
+                        <div
+                            class="bg-surface rounded-xl p-12 layered-card-shadow flex flex-col justify-center group border border-outline-variant/10 hover:translate-y-[-8px] transition-all duration-500 reveal"
+                        >
+                            <h3
+                                class="font-headline text-3xl text-primary mb-4"
+                            >
+                                Infinite Canvas
+                            </h3>
+                            <p
+                                class="text-on-surface-variant text-base leading-relaxed"
+                            >
+                                Organize your files across a non-linear
+                                workspace that mirrors the way you actually
+                                think about problems. No more hunting through
+                                tabs; just a vast, intuitive space for
+                                discovery.
+                            </p>
+                        </div>
+                        <!-- Bento Item 4: The Starling Language -->
+                        <div
+                            class="md:col-span-2 bg-secondary-container/30 rounded-xl p-12 layered-card-shadow flex flex-col justify-center group hover:translate-y-[-8px] transition-all duration-500 border border-secondary/10 reveal reveal-delay-1"
+                        >
+                            <div class="max-w-2xl">
+                                <h3
+                                    class="font-headline text-4xl text-primary mb-6"
+                                >
+                                    The Starling Language
+                                </h3>
+                                <p
+                                    class="text-on-surface-variant text-lg leading-relaxed"
+                                >
+                                    Experience a language inspired by Rust's
+                                    clarity, optimized specifically for the
+                                    needs of the modern interactive theorem
+                                    prover. Starling syntax is designed to be
+                                    readable as pen-and-paper proofs while
+                                    maintaining the strictness required for
+                                    formal verification.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <!-- Final CTA -->
+            <section class="py-64 px-8 relative overflow-hidden">
+                <div class="max-w-4xl mx-auto text-center reveal">
+                    <h2
+                        class="font-headline text-6xl md:text-7xl text-primary mb-12"
+                    >
+                        Start your next proof.
+                    </h2>
+                    <div
+                        class="flex flex-col md:flex-row justify-center items-center gap-8 reveal reveal-delay-1"
+                    >
+                        <a
+                            class="px-12 py-5 bg-primary text-on-primary rounded-xl font-bold tracking-tight hover:scale-105 transition-all duration-300 lush-shadow"
+                            href="editor.html"
+                        >
+                            Launch Starling Editor
+                        </a>
+                        <a
+                            class="px-12 py-5 text-primary font-bold border-b border-transparent hover:border-tertiary transition-all duration-300"
+                            href="documentation.html"
+                        >
+                            Explore Documentation
+                        </a>
+                    </div>
+                </div>
+            </section>
+        </main>
+        <!-- Footer -->
+        <footer
+            class="w-full bg-[#fbf9f4] dark:bg-[#1b1c19] border-t border-[#c1c8c2]/15"
+        >
+            <div
+                class="flex flex-col md:flex-row justify-between items-center px-12 py-16 w-full max-w-7xl mx-auto"
+            >
+                <div class="mb-8 md:mb-0 text-center md:text-left">
+                    <div
+                        class="text-lg font-bold text-[#012d1d] dark:text-[#fbf9f4] mb-2 uppercase tracking-tighter"
+                    >
+                        Starling
+                    </div>
+                    <p
+                        class="text-[#1b4332]/60 dark:text-[#fbf9f4]/60 text-xs tracking-widest uppercase"
+                    >
+                        © 2026
+                        <a href="https://enderminyard.com">ENDER MINYARD.</a>
+                    </p>
+                </div>
+                <div class="flex flex-wrap justify-center gap-8 md:gap-12">
+                    <a
+                        class="text-[#1b4332]/60 dark:text-[#fbf9f4]/60 text-xs uppercase tracking-widest hover:text-[#012d1d] dark:hover:text-[#ffffff] transition-all opacity-80 hover:opacity-100"
+                        href="https://us.metamath.org/"
+                        >metamath</a
+                    >
+                    <a
+                        class="text-[#1b4332]/60 dark:text-[#fbf9f4]/60 text-xs uppercase tracking-widest hover:text-[#160088] dark:hover:text-[#ffffff] transition-all opacity-80 hover:opacity-100 font-semibold"
+                        href="https://github.com/starlinglang/starling"
+                        >github</a
+                    >
+                </div>
+            </div>
+            <br />
+            <br />
+            <br />
+            <br />
+        </footer>
+        <!-- Bottom screen refined blur effect -->
+        <div
+            class="fixed bottom-0 left-0 w-full h-24 bg-gradient-to-t from-surface to-transparent pointer-events-none z-40 backdrop-blur-[2px]"
+        ></div>
+        <script>
+            // Intersection Observer for scroll reveal animations
+            const revealElements = document.querySelectorAll(".reveal");
+
+            const revealObserver = new IntersectionObserver(
+                (entries) => {
+                    entries.forEach((entry) => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add("active");
+                            // Once visible, we can unobserve if we only want it to reveal once
+                            // revealObserver.unobserve(entry.target);
+                        } else {
+                            // Optional: remove class to animate out when scrolling back up
+                            entry.target.classList.remove("active");
+                        }
+                    });
+                },
+                {
+                    threshold: 0.15,
+                    rootMargin: "0px 0px -50px 0px",
+                },
+            );
+
+            revealElements.forEach((el) => revealObserver.observe(el));
+        </script>
+    </body>
+</html>

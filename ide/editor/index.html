@@ -1,0 +1,364 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Starling IDE</title>
+        <meta
+            name="description"
+            content="Starling is a proof assistant designed for ease of use."
+        />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
+            rel="stylesheet"
+        />
+        <style>
+            :root {
+                --color-bg: #f8f9fa;
+                --color-grid: #e0e3e8;
+                --color-primary: #303f9f; /* Deep Indigo */
+                --color-primary-light: #e8eaf6;
+                --color-text-main: #1a1a24;
+                --color-text-muted: #6b7280;
+                --color-border: #e5e7eb;
+                --color-white: #ffffff;
+                --nav-height: 56px;
+                --sidebar-width: 260px;
+                --font-main: "Space Grotesk", sans-serif;
+                --font-mono: "Courier New", Courier, monospace;
+            }
+
+            * {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+
+            body {
+                font-family: var(--font-main);
+                background-color: var(--color-bg);
+                color: var(--color-text-main);
+                overflow: hidden; /* Prevent body scroll, handle in canvas */
+                height: 100vh;
+                width: 100vw;
+            }
+
+            #top-nav {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: var(--nav-height);
+                background: var(--color-white);
+                border-bottom: 1px solid var(--color-border);
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 0 24px;
+                z-index: 100;
+            }
+
+            .brand {
+                font-size: 1.25rem;
+                font-weight: 700;
+                color: var(--color-primary);
+                letter-spacing: -0.02em;
+            }
+
+            .nav-links {
+                display: flex;
+                gap: 24px;
+            }
+
+            .nav-link {
+                font-size: 0.9rem;
+                font-weight: 500;
+                color: var(--color-text-muted);
+                text-decoration: none;
+                cursor: pointer;
+                transition: color 0.2s;
+            }
+
+            .nav-link:hover {
+                color: var(--color-primary);
+            }
+
+            #sidebar {
+                position: fixed;
+                top: var(--nav-height);
+                left: 0;
+                bottom: 0;
+                width: var(--sidebar-width);
+                background: rgba(255, 255, 255, 0.9);
+                backdrop-filter: blur(10px);
+                border-right: 1px solid var(--color-border);
+                z-index: 90;
+                padding: 20px;
+                overflow-y: auto;
+            }
+
+            .sidebar-section-title {
+                font-size: 0.75rem;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+                color: var(--color-text-muted);
+                margin-bottom: 12px;
+                font-weight: 600;
+            }
+
+            .file-tree-item {
+                display: flex;
+                align-items: center;
+                padding: 8px 12px;
+                margin-bottom: 4px;
+                border-radius: 6px;
+                cursor: pointer;
+                font-size: 0.9rem;
+                color: var(--color-text-main);
+                transition: background 0.2s;
+            }
+
+            .file-tree-item:hover {
+                background: var(--color-primary-light);
+                color: var(--color-primary);
+            }
+
+            .file-tree-item.active {
+                background: var(--color-primary);
+                color: white;
+            }
+
+            .file-icon {
+                margin-right: 8px;
+                width: 16px;
+                height: 16px;
+                opacity: 0.7;
+            }
+
+            .tree-indent {
+                width: 16px;
+                display: inline-block;
+            }
+
+            #canvas-viewport {
+                position: fixed;
+                top: var(--nav-height);
+                left: var(--sidebar-width);
+                right: 0;
+                bottom: 0;
+                overflow: hidden;
+                cursor: grab;
+                background-image: radial-gradient(
+                    var(--color-grid) 1px,
+                    transparent 1px
+                );
+                background-size: 24px 24px;
+            }
+
+            #canvas-viewport:active {
+                cursor: grabbing;
+            }
+
+            #canvas-world {
+                position: absolute;
+                top: 0;
+                left: 0;
+                transform-origin: 0 0;
+            }
+
+            .file-container {
+                position: absolute;
+                width: 600px;
+                background: var(--color-white);
+                border: 1px solid var(--color-border);
+                border-radius: 12px;
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+                display: flex;
+                flex-direction: column;
+                overflow: hidden;
+                transition: box-shadow 0.2s;
+            }
+
+            .file-container:hover {
+                box-shadow: 0 8px 30px rgba(48, 63, 159, 0.1);
+            }
+
+            .container-header {
+                height: 44px;
+                background: var(--color-primary);
+                color: white;
+                display: flex;
+                align-items: center;
+                padding: 0 16px;
+                cursor: grab;
+                user-select: none;
+            }
+
+            .container-header:active {
+                cursor: grabbing;
+            }
+
+            .container-title {
+                font-size: 0.9rem;
+                font-weight: 600;
+                flex-grow: 1;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+
+            .window-controls {
+                display: flex;
+                gap: 6px;
+            }
+
+            .dot {
+                width: 10px;
+                height: 10px;
+                border-radius: 50%;
+                background: rgba(255, 255, 255, 0.3);
+            }
+
+            .module {
+                border-top: 1px solid var(--color-border);
+                display: flex;
+                flex-direction: column;
+            }
+
+            .module-header {
+                padding: 8px 16px;
+                background: #f3f4f6;
+                font-size: 0.75rem;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+                color: var(--color-text-muted);
+                display: flex;
+                justify-content: space-between;
+            }
+
+            .source-editor {
+                padding: 16px;
+                font-family: var(--font-mono);
+                font-size: 0.85rem;
+                line-height: 1.6;
+                min-height: 150px;
+                color: #4b5563;
+                position: relative;
+            }
+
+            .code-line {
+                display: block;
+            }
+
+            .kwd {
+                color: #303f9f;
+                font-weight: 600;
+            }
+            .str {
+                color: #10b981;
+            }
+            .com {
+                color: #9ca3af;
+                font-style: italic;
+            }
+            .fn {
+                color: #d97706;
+            }
+
+            /* Debugger Modules */
+            .debugger-module {
+                padding: 12px 16px;
+                font-size: 0.8rem;
+            }
+
+            .memory-bar {
+                width: 100%;
+                height: 4px;
+                background: #e5e7eb;
+                border-radius: 2px;
+                margin-top: 8px;
+                overflow: hidden;
+            }
+
+            .memory-fill {
+                height: 100%;
+                background: var(--color-primary);
+                width: 45%;
+            }
+
+            .stack-item {
+                padding: 4px 0;
+                border-bottom: 1px solid #f0f0f0;
+                color: var(--color-text-muted);
+            }
+            .stack-item:last-child {
+                border-bottom: none;
+            }
+            .stack-num {
+                color: var(--color-primary);
+                font-weight: 600;
+                margin-right: 8px;
+            }
+
+            .terminal-text {
+                font-family: var(--font-mono);
+                color: #10b981;
+            }
+
+            .btn-open {
+                display: block;
+                width: 100%;
+                padding: 10px;
+                background: var(--color-primary);
+                color: white;
+                text-align: center;
+                border-radius: 6px;
+                font-size: 0.85rem;
+                font-weight: 600;
+                text-decoration: none;
+            }
+        </style>
+    </head>
+    <body>
+        <!-- Top Navigation -->
+        <nav id="top-nav">
+            <div class="brand">Starling</div>
+            <div class="nav-links">
+                <a href="../documentation.html" class="nav-link"
+                    >Documentation</a
+                >
+                <a
+                    href="index.html"
+                    class="nav-link"
+                    style="
+                        color: var(--color-primary);
+                        font-weight: 700;
+                        border-bottom: 2px solid var(--color-primary);
+                    "
+                    >New</a
+                >
+                <a href="#" class="nav-link">Download</a>
+            </div>
+        </nav>
+
+        <!-- Sidebar -->
+        <aside id="sidebar">
+            <div class="sidebar-section-title">
+                <span style="margin-right: 6px">📂</span> Files
+            </div>
+            <div id="file-tree"></div>
+        </aside>
+
+        <div id="canvas-viewport">
+            <div id="canvas-world"></div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+        <script src="https://cdn.jsdelivr.net/npm/checkmm@1.1.1/dist/checkmm.js"></script>
+        <script src="lang.js"></script>
+        <script src="ui.js"></script>
+    </body>
+</html>

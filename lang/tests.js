@@ -12,7 +12,7 @@ let longTest = `
   weq = axiom t equals r: formula;
   wim = axiom <P implies Q>: formula;
 
-  // distinct wp, wq;
+  distinct wp, wq;
 
   a1 =  axiom <t equals r implies <t equals s implies r equals s >>: provable;
   a2 =  axiom <t+0> equals t: provable;
@@ -80,7 +80,6 @@ let shortTest = `
     w2;
     w2;
   }
-
   `;
 
 module.exports = { shortTest, longTest };

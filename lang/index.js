@@ -12,8 +12,9 @@ let compile = (string) => {
   const matchResult = langGrammar.match(string);
   const adapter = s(matchResult).makeAST();
   const ast = resolve(adapter);
-  return transpile(ast);
+  return transpile(ast).toString();
 };
 
-console.log(compile(shortTest));
+console.log(compile(longTest));
+
 module.exports = { compile };

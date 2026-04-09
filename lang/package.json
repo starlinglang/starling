@@ -5,11 +5,15 @@
   "license": "MIT",
   "author": "enderverse",
   "type": "commonjs",
-  "main": "grammar.js",
+  "main": "index.js",
   "scripts": {
-    "start": "node grammar.js"
+    "start": "node index.js",
+    "build": "npx esbuild index.js --bundle --minify --target=chrome58,firefox57,safari20,edge18 --outfile=../ide/editor/lang.js"
   },
   "dependencies": {
     "ohm-js": "^17.5.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.0"
   }
 }
