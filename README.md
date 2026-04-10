@@ -1,5 +1,5 @@
-# ⭐ Starling
-## Starling is a proof assistant that makes interactive theorem proving accessible. 
+<h1 align="center"> ⭐ Starling</h1>
+<h2 align="center"> Starling is a proof assistant that makes interactive theorem proving accessible.</h2>
 
 
 ![demo of IDE](static/demo.gif)
