@@ -1,3 +1,5 @@
+import almostnode from "https://cdn.jsdelivr.net/npm/almostnode@0.2.14/+esm";
+import checkmm from "https://unpkg.com/checkmm@1.1.1/dist/checkmm.js";
 import { grammar as $2iNG1$grammar } from "https://cdn.skypack.dev/ohm-js";
 import { toAST as $2iNG1$toAST } from "https://cdn.skypack.dev/ohm-js/extras";
 

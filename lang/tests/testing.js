@@ -8,17 +8,17 @@ let longTest = `
   wq = fix Q: formula;
 
   tze = axiom 0: term;
-  tpl = axiom <t + r>: term;
+  tpl = axiom < t + r > : term;
   weq = axiom t equals r: formula;
-  wim = axiom <P implies Q>: formula;
+  wim = axiom < P implies Q >: formula;
 
 
-  a1 =  axiom <t equals r implies <t equals s implies r equals s >>: provable;
-  a2 =  axiom <t+0> equals t: provable;
+  a1 =  axiom < t equals r implies < t equals s implies r equals s > >: provable;
+  a2 =  axiom < t + 0 > equals t: provable;
 
   block {
       min = assume P: provable;
-      maj = assume <P implies Q>: provable;
+      maj = assume < P implies Q >: provable;
       mp = axiom Q: provable;
       // comment inside block
   }
@@ -70,8 +70,8 @@ let shortTest = `
   wq = fix q: formula;
   wr = fix r: formula;
   ws = fix s: formula;
-  w2 = axiom <p implies q>: formula;
-  wnew = <s implies < r implies p >> :formula;
+  w2 = axiom < p implies q >: formula;
+  wnew = < s implies < r implies p > >:formula;
 
   proof of wnew {
     ws;

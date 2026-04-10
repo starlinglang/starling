@@ -135,23 +135,22 @@ function renderCanvas() {
     container.style.top = `${file.y}px`;
 
     container.innerHTML = `
-<div class="container-header" data-id="${file.id}">
-<div class="window-controls">
-<div class="dot"></div><div class="dot"></div><div class="dot"></div>
-</div>
-<div class="container-title" style="margin-left: 12px;">${file.name}</div>
-<div class="window-controls">
-<span style="font-size: 14px; cursor: pointer;">✕</span>
-</div>
-</div>
-<div class="module source-editor-container">
-<div class="module-header">
-Source Editor
-</div>
-<textarea class="source-editor">${file.code}</textarea>
-</div>
-</div>
-`;
+  <div class="container-header" data-id="${file.id}">
+  <div class="window-controls">
+  <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+  </div>
+  <div class="container-title" style="margin-left: 12px;">${file.name}</div>
+  <div class="window-controls">
+  <span style="font-size: 14px; cursor: pointer;">✕</span>
+  </div>
+  </div>
+  <div class="module source-editor-container">
+  <div class="module-header">
+  Source Editor
+  </div>
+  <textarea class="source-editor">${file.code}</textarea>
+  </div>
+  </div>`;
 
     canvasWorld.appendChild(container);
 
