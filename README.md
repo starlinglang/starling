@@ -1,8 +1,9 @@
 # ⭐ Starling
+## Starling is a proof assistant that makes interactive theorem proving accessible. 
+
 
 ![demo of IDE](static/demo.gif)
 
-<div style="text-align: center"> Starling is a proof assistant that makes interactive theorem proving accessible. </div>
 
 ![GitHub last commit](https://img.shields.io/github/last-commit/starlinglang/starling) ![GitHub License](https://img.shields.io/github/license/starlinglang/starling) ![GitHub stars](https://img.shields.io/github/stars/starlinglang/starling)
 
