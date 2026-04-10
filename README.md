@@ -1,17 +1,17 @@
-# ⭐Starling
-
-## Starling is a proof assistant that makes interactive theorem proving accessible.
+# ⭐ Starling
 
 ![demo of IDE](static/demo.gif)
+
+<div style="text-align: center"> Starling is a proof assistant that makes interactive theorem proving accessible. </div>
 
 ![GitHub last commit](https://img.shields.io/github/last-commit/starlinglang/starling) ![GitHub License](https://img.shields.io/github/license/starlinglang/starling) ![GitHub stars](https://img.shields.io/github/stars/starlinglang/starling)
 
 
-## ⭐Try Starling Now
+## ⭐ Try Starling Now
 No installation needed! **[Open the web editor](https://starling-lang.org/editor)** and write your first proof in minutes.
 
 
-## ⭐Quick Start
+## ⭐ Quick Start
 
 In your terminal:
 
@@ -21,7 +21,7 @@ cd starling/ide
 npx http-server
 ```
 
-## ⭐Features
+## ⭐ Features
 
 | Feature | Benefit |
 |---------|---------|
@@ -30,14 +30,14 @@ npx http-server
 | **Infinite Canvas** | Write proofs the way you think|
 | **Undo/Redo + Export** | Explore ideas without fear or hesitation; save and share your work |
 
-## ⭐Why Starling?
+## ⭐ Why Starling?
 
 The learning curve for existing proof assistants is steep, and the error messages given are not always helpful. 
 
 Starling is a rigorous proof assistant which is friendly to mathematicians and students at the beginning of their coding journey.
 
 
-## ⭐Contributing
+## ⭐ Contributing
 
 Contributions are welcome. The build system for this project is simple:
 
