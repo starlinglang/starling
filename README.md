@@ -1,11 +1,12 @@
 <h1 align="center"> ⭐ Starling</h1>
 <h2 align="center"> Starling is a proof assistant that makes interactive theorem proving accessible.</h2>
 
-
+<p align="center">
+![GitHub last commit](https://img.shields.io/github/last-commit/starlinglang/starling) ![GitHub License](https://img.shields.io/github/license/starlinglang/starling) ![GitHub stars](https://img.shields.io/github/stars/starlinglang/starling)
+</p>
 ![demo of IDE](static/demo.gif)
 
 
-![GitHub last commit](https://img.shields.io/github/last-commit/starlinglang/starling) ![GitHub License](https://img.shields.io/github/license/starlinglang/starling) ![GitHub stars](https://img.shields.io/github/stars/starlinglang/starling)
 
 
 ## ⭐ Try Starling Now
