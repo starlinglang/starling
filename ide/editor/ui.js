@@ -1,5 +1,3 @@
-// --- State Management ---
-
 const defaultFiles = [
   {
     id: "long-star",
@@ -8,60 +6,27 @@ const defaultFiles = [
     x: 100,
     y: 100,
     code: `define 0, +, equals, implies, <, >, term, formula, provable;
-tt = fix t: term;
-tr = fix r: term;
-ts = fix s: term;
-wp = fix P: formula;
-wq = fix Q: formula;
-tze = axiom 0: term;
-tpl = axiom <t + r>: term;
-weq = axiom t equals r: formula;
-wim = axiom <P implies Q>: formula;
-distinct wp, wq;
-a1 =  axiom <t equals r implies <t equals s implies r equals s >>: provable;
-a2 =  axiom <t+0> equals t: provable;
-block {
-min = assume P: provable;
-maj = assume <P implies Q>: provable;
-mp = axiom Q: provable;
-}
-th1 = t equals t: provable;
-proof of th1 {
-tt;
-tze;
-tpl;
-tt;
-weq;
-tt;
-tt;
-weq;
-tt;
-a2;
-tt;
-tze;
-tpl;
-tt;
-weq;
-tt;
-tze;
-tpl;
-tt;
-weq;
-tt;
-tt;
-weq;
-wim;
-tt;
-a2;
-tt;
-tze;
-tpl;
-tt;
-tt;
-a1;
-mp;
-mp;
-}`,
+         tt = fix t: term;
+         tr = fix r: term;
+         ts = fix s: term;
+         wp = fix P: formula;
+         wq = fix Q: formula;
+         tze = axiom 0: term;
+         tpl = axiom <t + r>: term;
+         weq = axiom t equals r: formula;
+         wim = axiom <P implies Q>: formula;
+         distinct wp, wq;
+         a1 =  axiom <t equals r implies <t equals s implies r equals s >>: provable;
+         a2 =  axiom <t+0> equals t: provable;
+         block {
+         min = assume P: provable;
+         maj = assume <P implies Q>: provable;
+         mp = axiom Q: provable;
+         }
+         th1 = t equals t: provable;
+         proof of th1 {
+         tt; tze; tpl; tt; weq; tt; tt; weq; tt; a2; tt; tze; tpl; tt; weq; tt; tze; tpl; tt; weq; tt; tt; weq; wim; tt; a2; tt; tze; tpl; tt; tt; a1; mp; mp;
+         }`,
   },
   {
     id: "short-star",
@@ -70,37 +35,35 @@ mp;
     x: 850,
     y: 200,
     code: `define <, >, implies, formula;
-wp = fix p: formula;
-wq = fix q: formula;
-wr = fix r: formula;
-ws = fix s: formula;
-w2 = axiom <p implies q>: formula;
-wnew = <s implies < r implies p >> :formula;
-proof of wnew {
-ws;
-wr;
-wp;
-w2;
-w2;
-}`,
+         wp = fix p: formula;
+         wq = fix q: formula;
+         wr = fix r: formula;
+         ws = fix s: formula;
+         w2 = axiom <p implies q>: formula;
+         wnew = <s implies < r implies p >> :formula;
+         proof of wnew {
+         ws;
+         wr;
+         wp;
+         w2;
+         w2;
+         }`,
   },
 ];
-
 let filesState =
   JSON.parse(localStorage.getItem("starling_files")) || defaultFiles;
-
 let canvasState = JSON.parse(localStorage.getItem("starling_canvas")) || {
   x: 0,
   y: 0,
   scale: 1,
 };
 
-// --- DOM Elements ---
+const editorStacks = new Map();
+
 const canvasViewport = document.getElementById("canvas-viewport");
 const canvasWorld = document.getElementById("canvas-world");
 const fileTreeEl = document.getElementById("file-tree");
 
-// --- Initialization ---
 function init() {
   renderFileTree();
   renderCanvas();
@@ -108,7 +71,6 @@ function init() {
   setupCanvasInteractions();
 }
 
-// --- File Tree Logic ---
 function renderFileTree() {
   fileTreeEl.innerHTML = "";
   filesState.forEach((file) => {
@@ -122,7 +84,6 @@ function renderFileTree() {
   });
 }
 
-// --- Canvas Rendering ---
 function renderCanvas() {
   const existing = canvasWorld.querySelectorAll(".file-container");
   existing.forEach((el) => el.remove());
@@ -134,40 +95,91 @@ function renderCanvas() {
     container.style.left = `${file.x}px`;
     container.style.top = `${file.y}px`;
 
-    container.innerHTML = `
-  <div class="container-header" data-id="${file.id}">
-  <div class="window-controls">
-  <div class="dot"></div><div class="dot"></div><div class="dot"></div>
-  </div>
-  <div class="container-title" style="margin-left: 12px;">${file.name}</div>
-  <div class="window-controls">
-  <span style="font-size: 14px; cursor: pointer;">✕</span>
-  </div>
-  </div>
-  <div class="module source-editor-container">
-  <div class="module-header">
-  Source Editor
-  </div>
-  <textarea class="source-editor">${file.code}</textarea>
-  </div>
-  </div>`;
+    if (!editorStacks.has(file.id)) {
+      editorStacks.set(file.id, new Stack(file.code));
+    }
+    const stack = editorStacks.get(file.id);
 
+    const header = document.createElement("div");
+    header.className = "container-header";
+    header.dataset.id = file.id;
+    header.innerHTML = `
+<div class="window-controls left">
+<button class="tool-btn undo-btn" title="Undo">↶</button>
+<button class="tool-btn redo-btn" title="Redo">↷</button>
+</div>
+<div class="container-title">${file.name}</div>
+<div class="window-controls right">
+<span class="delete-btn" title="Delete File">×</span>
+</div>
+`;
+
+    const moduleDiv = document.createElement("div");
+    moduleDiv.className = "module source-editor-container";
+    moduleDiv.innerHTML = `<div class="module-header">Source Editor</div>`;
+
+    const textarea = document.createElement("textarea");
+    textarea.className = "source-editor";
+    textarea.value = file.code;
+    textarea.spellcheck = false;
+    moduleDiv.appendChild(textarea);
+
+    container.appendChild(header);
+    container.appendChild(moduleDiv);
     canvasWorld.appendChild(container);
 
-    // Events
-    const header = container.querySelector(".container-header");
     setupContainerDrag(container, header, file.id);
-
-    const textarea = container.querySelector(".source-editor");
 
     textarea.addEventListener("input", () => {
       file.code = textarea.value;
       localStorage.setItem("starling_files", JSON.stringify(filesState));
+
+      clearTimeout(textarea._inputTimeout);
+      textarea._inputTimeout = setTimeout(() => {
+        stack.pushState(textarea.value);
+        updateUndoRedoUI(container, stack);
+      }, 400);
+    });
+
+    header.querySelector(".undo-btn").addEventListener("click", () => {
+      clearTimeout(textarea._inputTimeout);
+      stack.back();
+      applyHistoryState(file, stack, textarea, container);
+    });
+
+    header.querySelector(".redo-btn").addEventListener("click", () => {
+      clearTimeout(textarea._inputTimeout);
+      stack.forward();
+      applyHistoryState(file, stack, textarea, container);
+    });
+
+    updateUndoRedoUI(container, stack);
+
+    header.querySelector(".delete-btn").addEventListener("click", (e) => {
+      e.stopPropagation();
+      if (confirm(`Permanently delete "${file.name}"?`)) {
+        filesState = filesState.filter((f) => f.id !== file.id);
+        editorStacks.delete(file.id);
+        localStorage.setItem("starling_files", JSON.stringify(filesState));
+        renderFileTree();
+        renderCanvas();
+      }
     });
   });
 }
 
-// --- Canvas Interactions (Pan & Zoom) ---
+function applyHistoryState(file, stack, textarea, container) {
+  textarea.value = stack.state;
+  file.code = stack.state;
+  localStorage.setItem("starling_files", JSON.stringify(filesState));
+  updateUndoRedoUI(container, stack);
+}
+
+function updateUndoRedoUI(container, stack) {
+  container.querySelector(".undo-btn").disabled = stack.atStart;
+  container.querySelector(".redo-btn").disabled = stack.atEnd;
+}
+
 function applyCanvasTransform() {
   canvasWorld.style.transform = `translate(${canvasState.x}px, ${canvasState.y}px) scale(${canvasState.scale})`;
 }
@@ -213,7 +225,6 @@ function setupCanvasInteractions() {
   );
 }
 
-// --- Container Drag Logic ---
 function setupContainerDrag(container, header, fileId) {
   let isDragging = false;
   let startX, startY;
@@ -247,7 +258,6 @@ function setupContainerDrag(container, header, fileId) {
   });
 }
 
-// --- Camera Fly-to Animation ---
 function flyToContainer(fileId) {
   const file = filesState.find((f) => f.id === fileId);
   if (!file) return;
@@ -283,14 +293,12 @@ function animateCanvasTo(targetX, targetY) {
   requestAnimationFrame(step);
 }
 
-init();
-
 function newFile() {
   let date = new Date();
   filesState.push({
-    id: `new-star-${date}`,
-    name: `${date}.star`,
-    path: `src/${date}.star`,
+    id: `new-star-${date.getTime()}`,
+    name: `${date.toLocaleTimeString().replace(/:/g, "-")}.star`,
+    path: `src/new.star`,
     x: 150,
     y: 150,
     code: `define 0, +, equals, implies, <, >, term, formula, provable;`,
@@ -312,5 +320,6 @@ let downloading = () => {
 };
 
 document.getElementById("newFile").addEventListener("click", newFile);
-
 document.getElementById("download").addEventListener("click", downloading);
+
+init();
