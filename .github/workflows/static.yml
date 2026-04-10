@@ -37,7 +37,7 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           # Upload IDE folder
-          path: '\ide'
+          path: 'ide'
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v5
