@@ -54,13 +54,16 @@ npm run build
 
 If you want to contribute, you might consider working on features in the Starling roadmap such as:
 
-* Metamath to Starling compilation
 * [Pantograph integration](https://arxiv.org/pdf/2411.16571)
+* Metamath to Starling compilation
+* Source code definition-on-hover
+* Theorem counterexample generation
+* Proof imports from other proof assistants
+* Integration with Metamath databases
+* Metamath database search
 * [Proof visualization](https://github.com/Paper-Proof/paperproof)
 * [Theorem provenance visualization](https://github.com/patrik-cihal/lean-graph) 
 * Quickcheck tests
-* Theorem counterexample generation 
-* Proof imports from other languages
 * [Error messages](https://dl.acm.org/doi/10.1145/3344429.3372508)
 * [Interactive language documentation](https://willcrichton.net/nota)
 * Remote collaboration
