@@ -67,6 +67,5 @@ If you want to contribute, you might consider working on features in the Starlin
 * [Error messages](https://dl.acm.org/doi/10.1145/3344429.3372508)
 * [Interactive language documentation](https://willcrichton.net/nota)
 * Remote collaboration
-* Error messages
 * Git mirror syncing
 * Ability to see different branches / try different proof strategies (history viewer)
