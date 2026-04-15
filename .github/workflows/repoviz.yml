@@ -1,6 +1,5 @@
-- name: Repo Visualizer
-  uses: githubocto/repo-visualizer@0.9.1
-  with:
-    output_file: "static/repo.svg"
-    commit_message: "Create repo visualization."
-    should_push: true
+on: push
+jobs:
+  name: 'Repo Visualizer'
+  uses: 'githubocto/repo-visualizer@0.9.1'
+
