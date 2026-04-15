@@ -1,11 +1,6 @@
-  - name: Repo Visualizer
-  # You may pin to the exact commit or the version.
-  # uses: githubocto/repo-visualizer@a999615bdab757559bf94bda1fe6eef232765f85
+- name: Repo Visualizer
   uses: githubocto/repo-visualizer@0.9.1
   with:
-    # A path (relative to the root of your repo) to where you would like the diagram to live. For example: images/diagram.svg. Default: diagram.svg
-    output_file: "static/repo.png"
-    # The commit message to use when updating the diagram. Default: Repo visualizer: updated diagram
-    commit_message: "Create repo visulization."
-    # Whether to push the new commit back to the repository. Must be true or false. Default: true
+    output_file: "static/repo.svg"
+    commit_message: "Create repo visualization."
     should_push: true
