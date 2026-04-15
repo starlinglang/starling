@@ -7,7 +7,5 @@
     output_file: "static/repo.png"
     # The commit message to use when updating the diagram. Default: Repo visualizer: updated diagram
     commit_message: "Create repo visulization."
-    # The branch name to push the diagram to (branch will be created if it does not yet exist). For example: diagram
-    branch: true
     # Whether to push the new commit back to the repository. Must be true or false. Default: true
     should_push: true
