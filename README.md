@@ -2,7 +2,7 @@
 <h2 align="center"> Starling is a proof assistant that makes interactive theorem proving accessible.</h2>
 
 <p align="center">
-    <img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/starlinglang/starling" /> <img alt="GitHub License" src="https://img.shields.io/github/license/starlinglang/starling" /> <img alt="GitHub stars" src="https://img.shields.io/github/stars/starlinglang/starling" />
+    <img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/starlinglang/starling" /> <img alt="GitHub License" src="https://img.shields.io/github/license/starlinglang/starling" /> <img alt="GitHub stars" src="https://img.shields.io/github/stars/starlinglang/starling" /> 
 </p>
 
 

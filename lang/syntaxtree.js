@@ -1,33 +1,33 @@
-let actions = {
+const actions = {
   Database(stmts) {
     return stmts.children.map((c) => c.makeAST());
   },
 
-  import_stmt(one, name, three, four, five) {
+  import_stmt(one, name, three, four) {
     return { field: "import_stmt", value: name.sourceString };
   },
   Const(one, list, semicolon) {
-    let string_consts = list.asIteration().children.map((c) => c.sourceString);
-    return { field: "constant_stmt", value: string_consts };
+    const stringConsts = list.asIteration().children.map((c) => c.sourceString);
+    return { field: "constant_stmt", value: stringConsts };
   },
   Variable(one, list, three) {
-    let childAST = list.makeAST();
+    const childAST = list.makeAST();
     return childAST;
   },
   VariableListItem(variable, two, type) {
-    let vari = variable.sourceString;
-    let typ = type.sourceString;
+    const vari = variable.sourceString;
+    const typ = type.sourceString;
     return { field: "variable-stmt", variable: vari, type: typ };
   },
   Axiom(one, stmt, three, type, five) {
-    let axiomatic = stmt.sourceString;
-    let typ = type.sourceString;
+    const axiomatic = stmt.sourceString;
+    const typ = type.sourceString;
 
     return { field: "axiom", statement: axiomatic, type: typ };
   },
   Theorem(statement, three, type, four) {
-    let stmt = statement.asIteration().children.map((c) => c.sourceString);
-    let ind = stmt.indexOf("axiom");
+    const stmt = statement.asIteration().children.map((c) => c.sourceString);
+    const ind = stmt.indexOf("axiom");
     let fld = "axiom";
 
     if (ind > -1) {
@@ -35,36 +35,34 @@ let actions = {
     } else {
       fld = "theorem";
     }
-    let typ = type.sourceString;
+    const typ = type.sourceString;
     return { field: fld, statement: stmt, type: typ };
   },
   Essential_hyp(one, assumed, three, type, five) {
-    let assumption = assumed.sourceString;
-    let typ = type.sourceString;
-    let objet = { field: "essential-stmt", statement: assumption, type: typ };
+    const assumption = assumed.sourceString;
+    const typ = type.sourceString;
+    const objet = { field: "essential-stmt", statement: assumption, type: typ };
     return objet;
   },
   Disjoint(one, list, semicolon) {
     return { field: "disjoint", value: list.sourceString.split(",") };
   },
   To_sub(label, two, inner) {
-    let name = label.sourceString;
-    let a = inner.makeAST();
+    const name = label.sourceString;
+    const a = inner.makeAST();
     return { label: name, inside: a };
   },
   Inner(inside) {
     return inside.makeAST();
   },
-  Proof_block(one, thm_name, three, proof_content_array, five) {
-    let theorem = thm_name.sourceString;
-    let prf = proof_content_array
-      .asIteration()
-      .children.map((c) => c.makeAST());
+  Proof_block(one, thmName, three, arr, five) {
+    const theorem = thmName.sourceString;
+    const prf = arr.asIteration().children.map((c) => c.makeAST());
     return { field: "proof", value: theorem, proof: prf };
   },
   Proof_cell(name, semicolon) {
-    let name_i = name.sourceString;
-    return name_i;
+    const nameI = name.sourceString;
+    return nameI;
   },
   Block(one, two, list, four) {
     return {
@@ -79,21 +77,15 @@ let actions = {
     return child.makeAST();
   },
   Block_to_sub(label, two, inner) {
-    let name = label.sourceString;
+    const name = label.sourceString;
     return {
       label: name,
       inside: inner.children.map((c) => c.makeAST()),
     };
   },
-  _terminal() {
-    return;
-  },
-  _iter(...children) {
-    return;
-  },
-  NonemptyListOf(one, two, three) {
-    return;
-  },
+  _terminal() {},
+  _iter(...children) {},
+  NonemptyListOf(one, two, three) {},
   singleLineComment(one, two) {
     return "single_line_comment";
   },
@@ -123,4 +115,4 @@ function resolveReferences(arr) {
   return arr;
 }
 
-module.exports = { actions, resolveReferences };
+export { actions, resolveReferences };

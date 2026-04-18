@@ -1,13 +1,10 @@
-const ohm = require("ohm-js");
-const toAST = require("ohm-js/extras").toAST;
-const grammarString = require("./grammar.js").starlingGrammar;
-const actions = require("./syntaxtree.js").actions;
-const resolve = require("./syntaxtree.js").resolveReferences;
-const transpile = require("./mmgen.js").transpile;
-const { shortTest, longTest } = require("./tests/testing.js");
+import * as ohm from "ohm-js";
+import { starlingGrammar as grammarString } from "./grammar.js";
+import { actions, resolveReferences as resolve } from "./syntaxtree.js";
+import { transpile } from "./mmgen.js";
 
-let compile = (string) => {
-  let langGrammar = ohm.grammar(grammarString);
+const compile = (string) => {
+  const langGrammar = ohm.grammar(grammarString);
   const s = langGrammar.createSemantics().addOperation("makeAST", actions);
   const matchResult = langGrammar.match(string);
   const adapter = s(matchResult).makeAST();
@@ -15,4 +12,4 @@ let compile = (string) => {
   return [ast, transpile(ast)];
 };
 
-module.exports = { compile };
+export { compile };
