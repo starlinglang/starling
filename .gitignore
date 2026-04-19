@@ -19,8 +19,9 @@ lerna-debug.log*
 
 
 # Editor directories and files
-.zed/*
-.zed
+*/.zed/*
+*/.zed/
+*/.zed
 .vscode/*
 !.vscode/extensions.json
 .idea
