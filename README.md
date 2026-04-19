@@ -21,6 +21,7 @@ In your terminal:
 
 ```bash
 git clone https://github.com/starlinglang/starling.git
+npm install
 cd starling/ide
 npx http-server
 ```
@@ -47,8 +48,8 @@ Contributions are welcome. The build system for this project is simple:
 
 ```bash
 git clone https://github.com/starlinglang/starling.git
-cd starling/lang
 npm install
+cd starling/lang
 npm run build
 ```
 

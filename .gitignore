@@ -6,6 +6,8 @@ node_modules
 */node-modules/
 */node-modules
 
+.parcel-cache
+.parcel-cache/*
 
 # Logs
 logs
@@ -19,6 +21,8 @@ lerna-debug.log*
 
 
 # Editor directories and files
+.zed/*
+.zed
 .vscode/*
 !.vscode/extensions.json
 .idea

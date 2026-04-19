@@ -1,24 +1,31 @@
 {
-  "name": "starling-grammar",
+  "name": "starling",
   "version": "0.0.1",
-  "description": "Starling language.",
+  "description": "Starling language",
   "license": "MIT",
   "author": "enderverse",
+  "repository": "https://github.com/starlinglang/starling",
   "type": "module",
-  "source": "index.js",
-  "main": "../ide/editor/lang.mjs",
+  "source": "lang/index.js",
+  "main": "ide/editor/lang.mjs",
   "scripts": {
     "start": "node index.js",
-    "lint": "npx standard",
+    "lint": "npx standard --fix && npx htmlhint '**/*.html'",
     "test": "npx vitest",
-    "build": "parcel build && node fixImports.js",
+    "build": "parcel build",
     "watch": "parcel watch"
+  },
+  "release": {
+    "branches": [
+      "main"
+    ]
   },
   "dependencies": {
     "checkmm": "^1.1.1",
     "ohm-js": "^17.5.0"
   },
   "devDependencies": {
+    "htmlhint": "^1.9.2",
     "parcel": "^2.16.4",
     "standard": "^17.1.2",
     "vitest": "^4.1.4"

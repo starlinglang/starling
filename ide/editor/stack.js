@@ -1,41 +1,41 @@
 // from dwachss/historystack
-function Stack(inititalstate) {
-  this._length = 1;
-  this._index = 1;
-  this._states = [undefined, inititalstate]; // easiest on the math to use 1-index array
+function Stack (inititalstate) {
+  this._length = 1
+  this._index = 1
+  this._states = [undefined, inititalstate] // easiest on the math to use 1-index array
 }
 
 Stack.prototype = {
-  back() {
-    return this.go(-1);
+  back () {
+    return this.go(-1)
   },
-  forward() {
-    return this.go(1);
+  forward () {
+    return this.go(1)
   },
-  go(n) {
-    this._index += n;
-    if (this._index < 1) this._index = 1;
-    if (this._index > this._length) this._index = this._length;
-    return this.state;
+  go (n) {
+    this._index += n
+    if (this._index < 1) this._index = 1
+    if (this._index > this._length) this._index = this._length
+    return this.state
   },
-  pushState(state) {
-    this._length = ++this._index;
-    return this.replaceState(state);
+  pushState (state) {
+    this._length = ++this._index
+    return this.replaceState(state)
   },
-  replaceState(state) {
-    return (this._states[this._index] = state);
+  replaceState (state) {
+    return (this._states[this._index] = state)
   },
-  get length() {
-    return this._length;
+  get length () {
+    return this._length
   },
-  get state() {
-    return this._states[this._index];
+  get state () {
+    return this._states[this._index]
   },
 
-  get atStart() {
-    return this._index == 1;
+  get atStart () {
+    return this._index == 1
   },
-  get atEnd() {
-    return this._index == this._length;
-  },
-};
+  get atEnd () {
+    return this._index == this._length
+  }
+}
