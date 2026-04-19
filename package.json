@@ -25,6 +25,8 @@
     "ohm-js": "^17.5.0"
   },
   "devDependencies": {
+    "@commitlint/cli": "^20.5.0",
+    "@commitlint/config-conventional": "^20.5.0",
     "htmlhint": "^1.9.2",
     "parcel": "^2.16.4",
     "standard": "^17.1.2",
