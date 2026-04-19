@@ -49,7 +49,6 @@ Starling is a rigorous proof assistant which is friendly to mathematicians and s
 ```bash
 git clone https://github.com/starlinglang/starling.git
 npm install
-cd starling/lang
 npm run build
 ```
 
