@@ -44,7 +44,7 @@ Starling is a rigorous proof assistant which is friendly to mathematicians and s
 
 ## ⭐ Contributing
 
-[Contributions are welcome](CONTRIBUTING.md)! The build system for this project is simple:
+[Contributions are welcome!](CONTRIBUTING.md) The build system for this project is simple:
 
 ```bash
 git clone https://github.com/starlinglang/starling.git
