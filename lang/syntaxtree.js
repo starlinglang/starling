@@ -83,6 +83,12 @@ const actions = {
       inside: inner.children.map((c) => c.makeAST())
     }
   },
+  Replace (one, two, list, four, five) {
+    list.makeAST()
+  },
+  ReplaceListItem (star, colon, mm) {
+    return { toReplace: star, replacement: mm }
+  },
   _terminal () {},
   _iter (...children) {},
   NonemptyListOf (one, two, three) {},

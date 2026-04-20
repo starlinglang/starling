@@ -186,7 +186,9 @@ function $ef1aad00bdf59d5b$export$e6752350b2f8ac26 (ast) {
   for (const item of ast) {
     if (typeof item === 'string') {
       // Skip comments
-      if (item === 'single_line_comment' || item === 'multiline_comment') continue
+      if (item === 'single_line_comment' || item === 'multiline_comment') {
+        continue
+      }
     } else if (item.field === 'import_stmt') statements.imports.push(item)
     else if (item.field === 'constant_stmt') statements.constants = item.value
     else if (item.field === 'variable-stmt') statements.variables.push(item)
@@ -200,20 +202,29 @@ function $ef1aad00bdf59d5b$export$e6752350b2f8ac26 (ast) {
     else if (item.field === 'proof') statements.proofs.push(item)
   }
   // Generate imports section
-  for (const importItem of statements.imports)output.push(`$[ ${importItem.value} $]`)
+  for (const importItem of statements.imports) {
+    output.push(`$[ ${importItem.value} $]`)
+  }
   // Generate constants section
-  if (statements.constants.length > 0) output.push(`$c ${statements.constants.join(' ')} $.`)
+  if (statements.constants.length > 0) {
+    output.push(`$c ${statements.constants.join(' ')} $.`)
+  }
   // Generate variables section
   const allVariables = []
-  for (const item of statements.labeled) if (item.inside && item.inside.field === 'variable-stmt') allVariables.push(item.inside.variable)
+  for (const item of statements.labeled) {
+    if (item.inside && item.inside.field === 'variable-stmt') {
+      allVariables.push(item.inside.variable)
+    }
+  }
   if (allVariables.length > 0) output.push(`$v ${allVariables.join(' ')} $.`)
   // Generate labeled statements (variable declarations, axioms, etc.)
   for (const item of statements.labeled) {
     if (item.inside && item.inside.field === 'variable-stmt') {
       const { variable, type } = item.inside
       output.push(`${item.label} $f ${type} ${variable} $.`)
-    } else if (item.field === 'disjoint') output.push(`$d ${item.value.join(' ')} $.`)
-    else if (item.inside && item.inside.field === 'axiom') {
+    } else if (item.field === 'disjoint') {
+      output.push(`$d ${item.value.join(' ')} $.`)
+    } else if (item.inside && item.inside.field === 'axiom') {
       const { statement, type } = item.inside
       const stmt = Array.isArray(statement) ? statement.join(' ') : statement
       output.push(`${item.label} $a ${type} ${stmt} $.`)
@@ -224,13 +235,24 @@ function $ef1aad00bdf59d5b$export$e6752350b2f8ac26 (ast) {
     output.push('${')
     for (const blockItem of block.value) {
       if (typeof blockItem === 'string') {
-        if (blockItem === 'single_line_comment' || blockItem === 'multiline_comment') continue
+        if (
+          blockItem === 'single_line_comment' ||
+          blockItem === 'multiline_comment'
+        ) {
+          continue
+        }
       } else if (blockItem.label && blockItem.inside) {
-        if (Array.isArray(blockItem.inside)) // Block with essential statements or axioms
-        {
+        if (Array.isArray(blockItem.inside)) {
           for (const stmt of blockItem.inside) {
-            if (stmt.field === 'essential-stmt') output.push(`${blockItem.label} $e ${stmt.type} ${stmt.statement} $.`)
-            else if (stmt.field === 'axiom') output.push(`${blockItem.label} $a ${stmt.type} ${stmt.statement} $.`)
+            if (stmt.field === 'essential-stmt') {
+              output.push(
+                `${blockItem.label} $e ${stmt.type} ${stmt.statement} $.`
+              )
+            } else if (stmt.field === 'axiom') {
+              output.push(
+                `${blockItem.label} $a ${stmt.type} ${stmt.statement} $.`
+              )
+            }
           }
         }
       }
@@ -257,15 +279,16 @@ function $ef1aad00bdf59d5b$export$e6752350b2f8ac26 (ast) {
 }
 
 const $dac053cda336ef81$export$ef7acd7185315e22 = (string) => {
-  const langGrammar = $cqd1o$grammar((0, $f8caf0c026b39611$export$4d295a9d2402319b))
-  const s = langGrammar.createSemantics().addOperation('makeAST', (0, $54a6fe2ee4c00b95$export$e324594224ef24da))
+  const langGrammar = $cqd1o$grammar(
+    (0, $f8caf0c026b39611$export$4d295a9d2402319b)
+  )
+  const s = langGrammar
+    .createSemantics()
+    .addOperation('makeAST', (0, $54a6fe2ee4c00b95$export$e324594224ef24da))
   const matchResult = langGrammar.match(string)
   const adapter = s(matchResult).makeAST()
   const ast = (0, $54a6fe2ee4c00b95$export$d43989f1fbb8f4f9)(adapter)
-  return [
-    ast,
-    (0, $ef1aad00bdf59d5b$export$e6752350b2f8ac26)(ast)
-  ]
+  return [ast, (0, $ef1aad00bdf59d5b$export$e6752350b2f8ac26)(ast)]
 }
 
 export { $dac053cda336ef81$export$ef7acd7185315e22 as compile }

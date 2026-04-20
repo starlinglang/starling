@@ -33,9 +33,9 @@ Stack.prototype = {
   },
 
   get atStart () {
-    return this._index == 1
+    return this._index === 1
   },
   get atEnd () {
-    return this._index == this._length
+    return this._index === this._length
   }
 }

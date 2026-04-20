@@ -9,7 +9,7 @@
   "source": "lang/index.js",
   "main": "ide/editor/lang.mjs",
   "scripts": {
-    "start": "node index.js",
+    "start": "node lang/index.js",
     "lint": "npx standard --fix && npx htmlhint '**/*.html'",
     "test": "npx vitest",
     "build": "parcel build",

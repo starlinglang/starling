@@ -2,6 +2,7 @@ import * as ohm from 'ohm-js'
 import { starlingGrammar as grammarString } from './grammar.js'
 import { actions, resolveReferences as resolve } from './syntaxtree.js'
 import { transpile } from './mmgen.js'
+import { longTest } from './tests/testcases.js'
 
 const compile = (string) => {
   const langGrammar = ohm.grammar(grammarString)
@@ -11,5 +12,7 @@ const compile = (string) => {
   const ast = resolve(adapter)
   return [ast, transpile(ast)]
 }
+
+console.log(compile(longTest)[1])
 
 export { compile }

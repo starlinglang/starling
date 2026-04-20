@@ -15,7 +15,7 @@ Starling {
         Theorem =  NonemptyListOf<math_symbol, "">  ":"   math_symbol ";"
         Axiom = "axiom" math_symbol  ":"  math_symbol  ";"
         Replace = "replace" "{" NonemptyListOf<ReplaceListItem, ","> "}" ";"
-        ReplaceListItem =  replaceCharacters ":" math_symbol
+        ReplaceListItem =  math_symbol ":" replaceCharacters
         Variable = "fix" VariableListItem  ";"
         VariableListItem = math_symbol  ":" math_symbol
         Disjoint = "distinct" NonemptyListOf<math_symbol, ","> ";"

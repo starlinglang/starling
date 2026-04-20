@@ -66,7 +66,7 @@ mp;
 // shortTest.star
 const shortTest = `
 define (, );
-replace {= : equals,  wff : formula};
+replace { equals: = ,  formula: wff };
 
 wp = fix p: formula;
 wq = fix q: formula;
@@ -84,4 +84,4 @@ w2;
 }
   `
 
-module.exports = { shortTest, longTest }
+export { shortTest, longTest }

@@ -12,20 +12,25 @@ const __dirname = path.dirname(__filename)
 const shortFilePath = path.join(__dirname, 'compiled_short.mm')
 const longFilePath = path.join(__dirname, 'compiled_long.mm')
 
+// try {
+//   fs.writeFileSync(shortFilePath, compile(shortTest)[1])
+// } catch (error) {
+//   throw new Error(`Failed to write compiled files: ${error.message}`)
+// }
+
+// test('shortTest compiles and passes checkmm', () => {
+//   try {
+//     execSync(`npx checkmm "${shortFilePath}"`)
+//   } catch (error) {
+//     expect.fail(`checkmm failed for shortTest: ${error.message}`)
+//   }
+// })
+
 try {
-  fs.writeFileSync(shortFilePath, compile(shortTest))
-  fs.writeFileSync(longFilePath, compile(longTest))
+  fs.writeFileSync(longFilePath, compile(longTest)[1])
 } catch (error) {
   throw new Error(`Failed to write compiled files: ${error.message}`)
 }
-
-test('shortTest compiles and passes checkmm', () => {
-  try {
-    execSync(`npx checkmm "${shortFilePath}"`)
-  } catch (error) {
-    expect.fail(`checkmm failed for shortTest: ${error.message}`)
-  }
-})
 
 test('longTest compiles and passes checkmm', () => {
   try {

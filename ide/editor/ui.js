@@ -1,3 +1,5 @@
+/* global localStorage, Stack, confirm, requestAnimationFrame */
+
 const defaultFiles = [
   {
     id: 'long-star',
