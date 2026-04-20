@@ -10,7 +10,6 @@
 
 
 
-
 ## ⭐ Try Starling Now
 No installation needed! **[Open the web editor](https://starling-lang.org/editor)** and write your first proof in minutes.
 
