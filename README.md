@@ -33,7 +33,7 @@ npx http-server
 | **Metamath Foundation** | Mathematical proofs verified with rigor |
 | **Human-Readable Syntax** | Inspired by Isabelle/Isar, so proofs read like more like written math |
 | **Infinite Canvas** | Write proofs the way you think |
-| **Undo/Redo + Export** | Explore ideas without fear or hesitation - save + share your work |
+| **Undo/Redo + Export** | Explore ideas without hesitation - save + share your work |
 
 ## ⭐ Why Starling?
 
