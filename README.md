@@ -30,10 +30,10 @@ npx http-server
 
 | Feature | Benefit |
 |---------|---------|
-| **Metamath Foundation** | Mathematical proofs verified rigorously |
-| **Human-Readable Syntax** | Inspired by Isabelle/Isar, so proofs read like math |
-| **Infinite Canvas** | Write proofs the way you think|
-| **Undo/Redo + Export** | Explore ideas without fear or hesitation; save and share your work |
+| **Metamath Foundation** | Mathematical proofs verified with rigot |
+| **Human-Readable Syntax** | Inspired by Isabelle/Isar, so proofs read like more like written math |
+| **Infinite Canvas** | Write proofs the way you think |
+| **Undo/Redo + Export** | Explore ideas without fear or hesitation - save + share your work |
 
 ## ⭐ Why Starling?
 

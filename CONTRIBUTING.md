@@ -31,6 +31,7 @@ However, at this time, we do not accept the following contributions:
 
 * Model Context Protocol integration
 * Large language model integration
+* React integration
 
 ## Starling overview
 
