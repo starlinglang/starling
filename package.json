@@ -15,6 +15,11 @@
     "build": "parcel build",
     "watch": "parcel watch"
   },
+  "standard": {
+    "ignore": [
+      "ide/analytics.js"
+    ]
+  },
   "release": {
     "branches": [
       "main"

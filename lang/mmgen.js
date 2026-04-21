@@ -1,5 +1,11 @@
+/**
+ * This function transforms the Starling AST into Metamath.
+ * @param {string} ast
+ * @returns {string}
+ */
 function transpile (ast) {
   const output = []
+
   const statements = {
     imports: [],
     constants: [],
@@ -10,10 +16,8 @@ function transpile (ast) {
     proofs: []
   }
 
-  // First pass: collect and categorize statements
   for (const item of ast) {
     if (typeof item === 'string') {
-      // Skip comments
       if (item === 'single_line_comment' || item === 'multiline_comment') {
         continue
       }
@@ -42,17 +46,14 @@ function transpile (ast) {
     }
   }
 
-  // Generate imports section
   for (const importItem of statements.imports) {
     output.push(`$[ ${importItem.value} $]`)
   }
 
-  // Generate constants section
   if (statements.constants.length > 0) {
     output.push(`$c ${statements.constants.join(' ')} $.`)
   }
 
-  // Generate variables section
   const allVariables = []
   for (const item of statements.labeled) {
     if (item.inside && item.inside.field === 'variable-stmt') {
@@ -63,7 +64,6 @@ function transpile (ast) {
     output.push(`$v ${allVariables.join(' ')} $.`)
   }
 
-  // Generate labeled statements (variable declarations, axioms, etc.)
   for (const item of statements.labeled) {
     if (item.inside && item.inside.field === 'variable-stmt') {
       const { variable, type } = item.inside
@@ -77,7 +77,6 @@ function transpile (ast) {
     }
   }
 
-  // Generate blocks
   for (const block of statements.blocks) {
     output.push('${')
     for (const blockItem of block.value) {
@@ -90,7 +89,6 @@ function transpile (ast) {
         }
       } else if (blockItem.label && blockItem.inside) {
         if (Array.isArray(blockItem.inside)) {
-          // Block with essential statements or axioms
           for (const stmt of blockItem.inside) {
             if (stmt.field === 'essential-stmt') {
               output.push(
@@ -108,7 +106,6 @@ function transpile (ast) {
     output.push('$}')
   }
 
-  // Generate theorems
   for (const item of statements.theorems) {
     if (item.inside && item.inside.field === 'theorem') {
       const { statement, type } = item.inside
@@ -117,18 +114,29 @@ function transpile (ast) {
     }
   }
 
-  // Generate proofs
   for (const proofItem of statements.proofs) {
     if (proofItem.proof && Array.isArray(proofItem.proof)) {
       const proofSteps = proofItem.proof.join(' ')
-      // Append proof steps to the last line (theorem declaration)
       if (output.length > 0) {
         output[output.length - 1] += proofSteps + '\n$.'
       }
     }
   }
 
-  return output.join('\n')
+  let outputString = output.join('\n')
+
+  for (const item of ast) {
+    if (item.field-- - -'replace') {
+      for (const i in item.value) {
+        outputString = outputString.replaceAll(
+          item.value[i].toReplace,
+          item.value[i].replacement
+        )
+      }
+    }
+  }
+
+  return outputString
 }
 
 export { transpile }

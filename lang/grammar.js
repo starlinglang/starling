@@ -1,3 +1,10 @@
+/**
+ * This is the Starling grammar, defined for usage by ohm-js..
+ *
+ * @return {string} Starling language grammar.
+ *
+ */
+
 const starlingGrammar = String.raw`
 Starling {
         Database = Outermost_scope_stmt+
@@ -15,18 +22,18 @@ Starling {
         Theorem =  NonemptyListOf<math_symbol, "">  ":"   math_symbol ";"
         Axiom = "axiom" math_symbol  ":"  math_symbol  ";"
         Replace = "replace" "{" NonemptyListOf<ReplaceListItem, ","> "}" ";"
-        ReplaceListItem =  math_symbol ":" replaceCharacters
+        ReplaceListItem =  math_symbol ":" ReplaceCharacters
         Variable = "fix" VariableListItem  ";"
         VariableListItem = math_symbol  ":" math_symbol
         Disjoint = "distinct" NonemptyListOf<math_symbol, ","> ";"
         Const = "define" NonemptyListOf<math_symbol, ","> ";"
-        import_stmt = "import" "\"" any_printable_ascii_except_dollar_newline+ ";"
+        import_stmt = "import" "\"" importChar+ ";"
         math_symbol = const_symbol+
-        replaceCharacters = replaceCharacter+
-        replaceCharacter = any_printable_ascii_except_dollar_newline | "="
-        any_printable_ascii_except_dollar_newline =  "!"  | "#" | "%" | "&" | "'" | "(" | ")" | "*" | "+" | "," | "-" | "." |
+        ReplaceCharacters = ReplaceCharacter+
+        ReplaceCharacter = const_symbol | "=" | "\\" |  "'" |  "[" | "]" | "^" | "_"  
+        importChar =  "!"  | "#" | "%" | "&" | "'" | "(" | ")" | "*" | "+" | "," | "-" | "." |
           "/" | alnum | ":" | "<" | ">" | "?" | "@"  | "{" | "|" | "}" | "~"
-       const_symbol = "!" | "#" | "%" | "&" | "*" | "+" | "-" | "." | "(" | ")" |  "/" | alnum  | "<" | ">" | "?" | "@"  | "|" | "~"
+        const_symbol = "!" | "#" | "%" | "&" | "*" | "+" | "-" | "." | "(" | ")" |  "/" | alnum  | "<" | ">" | "?" | "@"  | "|" | "~"
         comment = multiLineComment | singleLineComment
         lineTerminator = "\n" | "\r" | "\u2028" | "\u2029"
         multiLineComment = "/*" (~"*/" sourceCharacter)* "*/"

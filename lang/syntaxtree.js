@@ -1,3 +1,10 @@
+/**
+ * This is an object containing semantic actions for the Starling grammar.
+ *
+ * https://ohmjs.org/docs/api-reference#semantic-actions
+ *
+ *
+ */
 const actions = {
   Database (stmts) {
     return stmts.children.map((c) => c.makeAST())
@@ -84,14 +91,16 @@ const actions = {
     }
   },
   Replace (one, two, list, four, five) {
-    list.makeAST()
+    return { field: 'replace', value: list.asIteration().children.map((c) => (c).makeAST()) }
   },
   ReplaceListItem (star, colon, mm) {
-    return { toReplace: star, replacement: mm }
+    return { toReplace: star.sourceString, replacement: mm.sourceString }
   },
   _terminal () {},
-  _iter (...children) {},
-  NonemptyListOf (one, two, three) {},
+  _iter (...children) {
+  },
+  NonemptyListOf (one, two, three) {
+  },
   singleLineComment (one, two) {
     return 'single_line_comment'
   },
@@ -100,16 +109,21 @@ const actions = {
   }
 }
 
-function resolveReferences (arr) {
+/**
+ * This function resolves references in the abstract syntax tree.
+ * @param {Array} ast
+ * @returns {Array}
+ */
+function resolveReferences (ast) {
   const labelMap = {}
 
-  arr.forEach((item) => {
+  ast.forEach((item) => {
     if (item.label) {
       labelMap[item.label] = item
     }
   })
 
-  arr.forEach((item) => {
+  ast.forEach((item) => {
     if (item.field === 'proof' && typeof item.value === 'string') {
       const label = item.value
       if (labelMap[label]) {
@@ -118,7 +132,7 @@ function resolveReferences (arr) {
     }
   })
 
-  return arr
+  return ast
 }
 
 export { actions, resolveReferences }

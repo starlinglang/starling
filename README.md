@@ -50,5 +50,10 @@ git clone https://github.com/starlinglang/starling.git
 npm install
 npm run build
 ```
+You'll also need to download set.mm to run tests:
+```bash
+cd lang
+curl https://raw.githubusercontent.com/metamath/set.mm/develop/set.mm -o set.mm
+```
 
 If you want to contribute, you might consider working on [these features](CONTRIBUTING.md).

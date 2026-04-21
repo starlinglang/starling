@@ -31,3 +31,8 @@ lerna-debug.log*
 *.njsproj
 *.sln
 *.sw?
+
+# Metamath databases
+
+set.mm
+*/set.mm
