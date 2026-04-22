@@ -1,7 +1,7 @@
 {
   "name": "starling",
   "version": "0.0.1",
-  "description": "Starling language",
+  "description": "Starling language.",
   "license": "MIT",
   "author": "enderverse",
   "repository": "https://github.com/starlinglang/starling",
@@ -12,7 +12,7 @@
     "start": "node lang/index.js",
     "lint": "npx standard --fix && npx htmlhint '**/*.html'",
     "test": "npx vitest",
-    "build": "parcel build",
+    "build": "parcel build &&  npx jsdoc -c jsdoc.json -d ide/docs",
     "watch": "parcel watch"
   },
   "standard": {
@@ -33,6 +33,7 @@
     "@commitlint/cli": "^20.5.0",
     "@commitlint/config-conventional": "^20.5.0",
     "htmlhint": "^1.9.2",
+    "jsdoc": "^4.0.5",
     "parcel": "^2.16.4",
     "standard": "^17.1.2",
     "vitest": "^4.1.4"

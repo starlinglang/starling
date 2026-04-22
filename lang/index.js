@@ -4,7 +4,8 @@ import { actions, resolveReferences as resolve } from './syntaxtree.js'
 import { transpile } from './mmgen.js'
 
 /**
- * Takes in a Starling string. Returns array with Starling string AST and Starling string compiled to Metamath.
+ * Takes in a Starling string.
+ * Returns array with Starling string AST and Starling string compiled to Metamath.
  * @param {string} star
  * @returns {Array}
  * @example

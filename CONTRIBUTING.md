@@ -9,6 +9,7 @@ If you would like to contribute to a specific part of the project, check out the
 * Starling codebase
   * Git mirror syncing
   * Interactive language documentation
+  * JSDoc documentation
 
 * Starling language
   * Quickcheck tests

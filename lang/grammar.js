@@ -1,7 +1,8 @@
 /**
- * This is the Starling grammar, defined for usage by ohm-js..
- *
+ * This is the Starling grammar, defined for usage by ohm-js.
+ * @constant
  * @return {string} Starling language grammar.
+ *
  *
  */
 
@@ -30,7 +31,7 @@ Starling {
         import_stmt = "import" "\"" importChar+ ";"
         math_symbol = const_symbol+
         ReplaceCharacters = ReplaceCharacter+
-        ReplaceCharacter = const_symbol | "=" | "\\" |  "'" |  "[" | "]" | "^" | "_"  
+        ReplaceCharacter = const_symbol | "=" | "\\" |  "'" |  "[" | "]" | "^" | "_"
         importChar =  "!"  | "#" | "%" | "&" | "'" | "(" | ")" | "*" | "+" | "," | "-" | "." |
           "/" | alnum | ":" | "<" | ">" | "?" | "@"  | "{" | "|" | "}" | "~"
         const_symbol = "!" | "#" | "%" | "&" | "*" | "+" | "-" | "." | "(" | ")" |  "/" | alnum  | "<" | ">" | "?" | "@"  | "|" | "~"

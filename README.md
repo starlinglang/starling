@@ -29,8 +29,8 @@ npx http-server
 
 | Feature | Benefit |
 |---------|---------|
-| **Metamath Foundation** | Mathematical proofs verified with rigor |
-| **Human-Readable Syntax** | Inspired by Isabelle/Isar, so proofs read like more like written math |
+| **Metamath Foundation** | Mathematical proofs verified rigorously |
+| **Human-Readable Syntax** | Inspired by Isabelle/Isar, so proofs read more like written math |
 | **Infinite Canvas** | Write proofs the way you think |
 | **Undo/Redo + Export** | Explore ideas without hesitation - save + share your work |
 
@@ -43,17 +43,14 @@ Starling is a rigorous proof assistant which is friendly to mathematicians and s
 
 ## ⭐ Contributing
 
-[Contributions are welcome!](CONTRIBUTING.md) The build system for this project is simple:
+[Contributions are welcome!](https://github.com/starlinglang/starling/blob/main/CONTRIBUTING.md) 
+
+The build system for this project is relatively simple:
 
 ```bash
 git clone https://github.com/starlinglang/starling.git
 npm install
 npm run build
 ```
-You'll also need to download set.mm to run tests:
-```bash
-cd lang
-curl https://raw.githubusercontent.com/metamath/set.mm/develop/set.mm -o set.mm
-```
 
-If you want to contribute, you might consider working on [these features](CONTRIBUTING.md).
+If you want to contribute, you might consider working on [these features](https://github.com/starlinglang/starling/blob/main/CONTRIBUTING.md).

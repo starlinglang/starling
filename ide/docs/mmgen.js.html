@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: mmgen.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: mmgen.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * This function transforms the Starling AST into Metamath.
+ * @param {string} ast
+ * @returns {string}
+ */
+function transpile (ast) {
+  const output = []
+
+  const statements = {
+    imports: [],
+    constants: [],
+    variables: [],
+    labeled: [],
+    blocks: [],
+    theorems: [],
+    proofs: []
+  }
+
+  for (const item of ast) {
+    if (typeof item === 'string') {
+      if (item === 'single_line_comment' || item === 'multiline_comment') {
+        continue
+      }
+    } else if (item.field === 'import_stmt') {
+      statements.imports.push(item)
+    } else if (item.field === 'constant_stmt') {
+      statements.constants = item.value
+    } else if (item.field === 'variable-stmt') {
+      statements.variables.push(item)
+    } else if (item.label &amp;&amp; item.inside) {
+      if (item.inside.field === 'variable-stmt') {
+        statements.labeled.push(item)
+      } else if (item.inside.field === 'block') {
+        statements.blocks.push(item)
+      } else if (item.inside.field === 'theorem') {
+        statements.theorems.push(item)
+      } else {
+        statements.labeled.push(item)
+      }
+    } else if (item.field === 'disjoint') {
+      statements.labeled.push(item)
+    } else if (item.field === 'block') {
+      statements.blocks.push(item)
+    } else if (item.field === 'proof') {
+      statements.proofs.push(item)
+    }
+  }
+
+  for (const importItem of statements.imports) {
+    output.push(`$[ ${importItem.value} $]`)
+  }
+
+  if (statements.constants.length > 0) {
+    output.push(`$c ${statements.constants.join(' ')} $.`)
+  }
+
+  const allVariables = []
+  for (const item of statements.labeled) {
+    if (item.inside &amp;&amp; item.inside.field === 'variable-stmt') {
+      allVariables.push(item.inside.variable)
+    }
+  }
+  if (allVariables.length > 0) {
+    output.push(`$v ${allVariables.join(' ')} $.`)
+  }
+
+  for (const item of statements.labeled) {
+    if (item.inside &amp;&amp; item.inside.field === 'variable-stmt') {
+      const { variable, type } = item.inside
+      output.push(`${item.label} $f ${type} ${variable} $.`)
+    } else if (item.field === 'disjoint') {
+      output.push(`$d ${item.value.join(' ')} $.`)
+    } else if (item.inside &amp;&amp; item.inside.field === 'axiom') {
+      const { statement, type } = item.inside
+      const stmt = Array.isArray(statement) ? statement.join(' ') : statement
+      output.push(`${item.label} $a ${type} ${stmt} $.`)
+    }
+  }
+
+  for (const block of statements.blocks) {
+    output.push('${')
+    for (const blockItem of block.value) {
+      if (typeof blockItem === 'string') {
+        if (
+          blockItem === 'single_line_comment' ||
+          blockItem === 'multiline_comment'
+        ) {
+          continue
+        }
+      } else if (blockItem.label &amp;&amp; blockItem.inside) {
+        if (Array.isArray(blockItem.inside)) {
+          for (const stmt of blockItem.inside) {
+            if (stmt.field === 'essential-stmt') {
+              output.push(
+                `${blockItem.label} $e ${stmt.type} ${stmt.statement} $.`
+              )
+            } else if (stmt.field === 'axiom') {
+              output.push(
+                `${blockItem.label} $a ${stmt.type} ${stmt.statement} $.`
+              )
+            }
+          }
+        }
+      }
+    }
+    output.push('$}')
+  }
+
+  for (const item of statements.theorems) {
+    if (item.inside &amp;&amp; item.inside.field === 'theorem') {
+      const { statement, type } = item.inside
+      const stmt = Array.isArray(statement) ? statement.join(' ') : statement
+      output.push(`${item.label} $p ${type} ${stmt} $= `)
+    }
+  }
+
+  for (const proofItem of statements.proofs) {
+    if (proofItem.proof &amp;&amp; Array.isArray(proofItem.proof)) {
+      const proofSteps = proofItem.proof.join(' ')
+      if (output.length > 0) {
+        output[output.length - 1] += proofSteps + '\n$.'
+      }
+    }
+  }
+
+  let outputString = output.join('\n')
+
+  for (const item of ast) {
+    if (item.field-- - -'replace') {
+      for (const i in item.value) {
+        outputString = outputString.replaceAll(
+          item.value[i].toReplace,
+          item.value[i].replacement
+        )
+      }
+    }
+  }
+
+  return outputString
+}
+
+export { transpile }
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#actions">actions</a></li><li><a href="global.html#compile">compile</a></li><li><a href="global.html#resolveReferences">resolveReferences</a></li><li><a href="global.html#starlingGrammar">starlingGrammar</a></li><li><a href="global.html#transpile">transpile</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Tue Apr 21 2026 21:27:38 GMT-0400 (Eastern Daylight Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
