@@ -4,29 +4,20 @@
   "description": "Starling language.",
   "license": "MIT",
   "author": "enderverse",
-  "repository": "https://github.com/starlinglang/starling",
+  "repository": "github.com/starlinglang/starling",
   "type": "module",
   "source": "lang/index.js",
-  "main": "ide/editor/lang.mjs",
+  "browser": "ide/editor/lang.mjs",
   "scripts": {
     "start": "node lang/index.js",
-    "lint": "npx standard --fix && npx htmlhint '**/*.html'",
+    "lint": "npx standard --fix && npx htmlhint 'ide/editor/*.html' 'ide/index.html'",
     "test": "npx vitest",
     "build": "parcel build &&  npx jsdoc -c jsdoc.json -d ide/docs",
+    "build:lang": "parcel build --no-content-hash --target browser --no-source-maps",
+    "build:docs": "npx jsdoc -c jsdoc.json -d ide/docs",
     "watch": "parcel watch"
   },
-  "standard": {
-    "ignore": [
-      "ide/analytics.js"
-    ]
-  },
-  "release": {
-    "branches": [
-      "main"
-    ]
-  },
   "dependencies": {
-    "checkmm": "^1.1.1",
     "ohm-js": "^17.5.0"
   },
   "devDependencies": {
@@ -37,5 +28,24 @@
     "parcel": "^2.16.4",
     "standard": "^17.1.2",
     "vitest": "^4.1.4"
+  },
+  "standard": {
+    "ignore": [
+      "ide/analytics.js",
+      "ide/docs/scripts",
+      "ide/editor/src/lang.mjs"
+    ]
+  },
+  "release": {
+    "branches": [
+      "main"
+    ]
+  },
+  "targets": {
+    "browser": {
+      "includeNodeModules": [
+        "ohm-js"
+      ]
+    }
   }
 }
