@@ -1,1 +1,1 @@
-const worker = new Worker('worker.js', { type: 'module' })
+// const worker = new Worker('src/worker.js', { type: 'module' })

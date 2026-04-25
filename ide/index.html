@@ -1,6 +1,5 @@
 <!doctype html>
-
-<html class="light" lang="en">
+<html lang="en">
     <head>
         <link
             rel="icon"
@@ -99,7 +98,6 @@
                 font-family: "Newsreader", serif;
             }
 
-            /* Multi-layered shadow inspired by Josh W. Comeau & Cosha */
             .deep-shadow {
                 box-shadow:
                     0 1px 1px hsl(0deg 0% 0% / 0.011),
@@ -136,7 +134,6 @@
                 );
             }
 
-            /* Scroll Animation States */
             .reveal {
                 opacity: 0;
                 transform: translateY(30px);
@@ -160,7 +157,6 @@
     <body
         class="bg-surface text-on-surface selection:bg-tertiary-fixed selection:text-tertiary"
     >
-        <!-- TopNavBar -->
         <nav
             class="fixed top-0 w-full z-50 bg-[#fbf9f4]/80 dark:bg-[#1b1c19]/80 backdrop-blur-xl border-b border-outline-variant/10"
         >
@@ -188,7 +184,6 @@
             </div>
         </nav>
         <main class="relative overflow-hidden">
-            <!-- Hero Section -->
             <section
                 class="relative min-h-screen flex flex-col items-center justify-center pt-32 px-6 overflow-hidden"
             >
@@ -339,7 +334,6 @@
                     </div>
                 </div>
             </section>
-            <!-- Bento Grid: Precision Section -->
             <section class="py-48 bg-surface-container-low/50">
                 <div class="max-w-7xl mx-auto px-8">
                     <div class="mb-24 text-center max-w-2xl mx-auto reveal">
@@ -353,7 +347,6 @@
                         </p>
                     </div>
                     <div class="grid md:grid-cols-3 gap-8">
-                        <!-- Bento Item 1: Structured Code Editor -->
                         <div
                             class="md:col-span-2 bg-surface rounded-xl p-12 layered-card-shadow flex flex-col justify-center group hover:translate-y-[-8px] transition-all duration-500 border border-outline-variant/10 reveal"
                         >
@@ -376,7 +369,6 @@
                                 </p>
                             </div>
                         </div>
-                        <!-- Bento Item 2: Metamath Core -->
                         <div
                             class="bg-primary text-on-primary rounded-xl p-12 layered-card-shadow flex flex-col justify-center relative overflow-hidden group hover:translate-y-[-8px] transition-all duration-500 reveal reveal-delay-1"
                         >
@@ -396,7 +388,6 @@
                                 </p>
                             </div>
                         </div>
-                        <!-- Bento Item 3: Infinite Canvas -->
                         <div
                             class="bg-surface rounded-xl p-12 layered-card-shadow flex flex-col justify-center group border border-outline-variant/10 hover:translate-y-[-8px] transition-all duration-500 reveal"
                         >
@@ -415,7 +406,6 @@
                                 discovery.
                             </p>
                         </div>
-                        <!-- Bento Item 4: The Starling Language -->
                         <div
                             class="md:col-span-2 bg-secondary-container/30 rounded-xl p-12 layered-card-shadow flex flex-col justify-center group hover:translate-y-[-8px] transition-all duration-500 border border-secondary/10 reveal reveal-delay-1"
                         >
@@ -428,20 +418,18 @@
                                 <p
                                     class="text-on-surface-variant text-lg leading-relaxed"
                                 >
-                                    Experience a language inspired by Rust's
-                                    clarity, optimized specifically for the
-                                    needs of the modern interactive theorem
-                                    prover. Starling syntax is designed to be
-                                    readable as pen-and-paper proofs while
-                                    maintaining the strictness required for
-                                    formal verification.
+                                    Write in a language inspired by Rust's
+                                    clarity, desgined specifically for the needs
+                                    of the modern interactive theorem prover.
+                                    Starling syntax is designed to be readable
+                                    as pen-and-paper proofs while maintaining
+                                    the rigor required for formal verification.
                                 </p>
                             </div>
                         </div>
                     </div>
                 </div>
             </section>
-            <!-- Final CTA -->
             <section class="py-64 px-8 relative overflow-hidden">
                 <div class="max-w-4xl mx-auto text-center reveal">
                     <h2
@@ -468,7 +456,6 @@
                 </div>
             </section>
         </main>
-        <!-- Footer -->
         <footer
             class="w-full bg-[#fbf9f4] dark:bg-[#1b1c19] border-t border-[#c1c8c2]/15"
         >
@@ -506,12 +493,10 @@
             <br />
             <br />
         </footer>
-        <!-- Bottom screen refined blur effect -->
         <div
             class="fixed bottom-0 left-0 w-full h-24 bg-gradient-to-t from-surface to-transparent pointer-events-none z-40 backdrop-blur-[2px]"
         ></div>
         <script>
-            // Intersection Observer for scroll reveal animations
             const revealElements = document.querySelectorAll(".reveal");
 
             const revealObserver = new IntersectionObserver(

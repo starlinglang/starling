@@ -51,13 +51,11 @@ test('setmmTest compiles and passes checkmm when appended to set.mm', () => {
       )
     }
 
-    // Compile setmmTest and append to set.mm
     const compiledSetmmTest = compile(setmmTest)[1]
     const setmmContent = fs.readFileSync(setmmPath, 'utf-8')
     const combinedContent = setmmContent + '\n' + compiledSetmmTest
     fs.writeFileSync(setmmTestFilePath, combinedContent)
 
-    // Run checkmm on the combined file
     execSync(`npx checkmm "${setmmTestFilePath}"`)
   } catch (error) {
     expect.fail(
@@ -67,7 +65,12 @@ test('setmmTest compiles and passes checkmm when appended to set.mm', () => {
 }, 100_000)
 
 afterAll(() => {
-  const filesToClean = [shortFilePath, longFilePath, setmmTestFilePath]
+  const filesToClean = [
+    shortFilePath,
+    longFilePath,
+    setmmTestFilePath,
+    setmmPath
+  ]
 
   filesToClean.forEach((filePath) => {
     try {
