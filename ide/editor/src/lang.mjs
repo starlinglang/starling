@@ -11,7 +11,7 @@ function $parcel$export(e, n, v, s) {
  */ const $c85bf9ccc162a34d$export$4d295a9d2402319b = String.raw`
 Starling {
         Database = Outermost_scope_stmt+
-        Outermost_scope_stmt = import_stmt | Const | Replace | Disjoint | To_sub | Proof_block | Block | comment
+        Outermost_scope_stmt = Import_stmt | Const | Replace | Disjoint | To_sub | Proof_block | Block | comment
         Block_content = Disjoint | Block | Block_to_sub | comment
         Block = "block"  "{" Block_content+  "}"
         Block_to_sub = math_symbol  "="  Block_inner
@@ -30,7 +30,7 @@ Starling {
         VariableListItem = math_symbol  ":" math_symbol
         Disjoint = "distinct" NonemptyListOf<math_symbol, ","> ";"
         Const = "define" NonemptyListOf<math_symbol, ","> ";"
-        import_stmt = "import" "\"" importChar+ ";"
+        Import_stmt = "import" "\"" importChar+ "\"" ";"
         math_symbol = const_symbol+
         ReplaceCharacters = ReplaceCharacter+
         ReplaceCharacter = const_symbol | "=" | "\\" |  "'" |  "[" | "]" | "^" | "_"
@@ -55,7 +55,7 @@ Starling {
     Database (stmts) {
         return stmts.children.map((c)=>c.makeAST());
     },
-    import_stmt (one, name, three, four) {
+    Import_stmt (one, two, name, three, four) {
         return {
             field: 'import_stmt',
             value: name.sourceString
@@ -93,10 +93,10 @@ Starling {
     Theorem (statement, three, type, four) {
         const stmt = statement.asIteration().children.map((c)=>c.sourceString);
         const ind = stmt.indexOf('axiom');
+        const typ = type.sourceString;
         let fld = 'axiom';
         if (ind > -1) stmt.splice(ind, 1);
         else fld = 'theorem';
-        const typ = type.sourceString;
         return {
             field: fld,
             statement: stmt,
@@ -219,9 +219,7 @@ Starling {
         proofs: []
     };
     for (const item of ast){
-        if (typeof item === 'string') {
-            if (item === 'single_line_comment' || item === 'multiline_comment') continue;
-        } else if (item.field === 'import_stmt') statements.imports.push(item);
+        if (item.field === 'import_stmt') statements.imports.push(item);
         else if (item.field === 'constant_stmt') statements.constants = item.value;
         else if (item.field === 'variable-stmt') statements.variables.push(item);
         else if (item.label && item.inside) {
@@ -274,7 +272,7 @@ Starling {
     }
     let outputString = output.join('\n');
     for (const item of ast){
-        if (item.field-- - -'replace') for(const i in item.value)outputString = outputString.replaceAll(item.value[i].toReplace, item.value[i].replacement);
+        if (item.field === 'replace') for(const i in item.value)outputString = outputString.replaceAll(item.value[i].toReplace, item.value[i].replacement);
     }
     return outputString;
 }

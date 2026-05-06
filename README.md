@@ -1,17 +1,11 @@
 <h1 align="center"> ⭐ Starling</h1>
 <h2 align="center"> Starling is a proof assistant that makes interactive theorem proving accessible.</h2>
 
-<p align="center">
-    <img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/starlinglang/starling" /> <img alt="GitHub License" src="https://img.shields.io/github/license/starlinglang/starling" /> <img alt="GitHub stars" src="https://img.shields.io/github/stars/starlinglang/starling" /> 
-</p>
-
-
-![demo of IDE](static/demo.gif)
-
+![Demo of language.](static/demo.gif)
 
 
 ## ⭐ Try Starling Now
-No installation needed! **[Open the web editor](https://starling-lang.org/editor)** and write your first proof in minutes.
+No installation needed! **[Open the web editor](https://starling-lang.org/editor)** and try writing a proof in the Starling language.
 
 
 ## ⭐ Quick Start
@@ -27,18 +21,14 @@ npx http-server
 
 ## ⭐ Features
 
-| Feature | Benefit |
-|---------|---------|
-| **Metamath Foundation** | Mathematical proofs verified rigorously |
-| **Human-Readable Syntax** | Inspired by Isabelle/Isar, so proofs read more like written math |
-| **Infinite Canvas** | Write proofs the way you think |
-| **Undo/Redo + Export** | Explore ideas without hesitation - save + share your work |
+Starling is inspired by the simplicity of Metamath and the readability of Isabelle/Isar, inheriting Metamath's proof verifier and Isabelle/Isar's readable grammar.
+
 
 ## ⭐ Why Starling?
 
 The learning curve for existing proof assistants is steep, and the error messages given are not always helpful. 
 
-Starling is a rigorous proof assistant which is friendly to mathematicians and students at the beginning of their coding journey.
+Starling is a rigorous proof assistant which is meant to be friendly to mathematicians and students at the beginning of their coding journey.
 
 
 ## ⭐ Contributing

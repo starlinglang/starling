@@ -10,7 +10,7 @@ const actions = {
     return stmts.children.map((c) => c.makeAST())
   },
 
-  import_stmt (one, name, three, four) {
+  Import_stmt (one, two, name, three, four) {
     return { field: 'import_stmt', value: name.sourceString }
   },
   Const (one, list, semicolon) {
@@ -35,6 +35,8 @@ const actions = {
   Theorem (statement, three, type, four) {
     const stmt = statement.asIteration().children.map((c) => c.sourceString)
     const ind = stmt.indexOf('axiom')
+    const typ = type.sourceString
+
     let fld = 'axiom'
 
     if (ind > -1) {
@@ -42,7 +44,6 @@ const actions = {
     } else {
       fld = 'theorem'
     }
-    const typ = type.sourceString
     return { field: fld, statement: stmt, type: typ }
   },
   Essential_hyp (one, assumed, three, type, five) {

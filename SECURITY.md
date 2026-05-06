@@ -9,7 +9,6 @@ If you think you have found a vulnerability in this repository, please report it
 Instead, report it using one of the following ways:
 
 * Contact the [maintainers](mailto:starlingdev@protonmail.com) via email.
-* Report a [vulnerability](https://github.com/starlinglang/starling/security/advisories/new) directly via private vulnerability reporting on GitHub.
 
 Please include as much of the information listed below as you can to help us better understand and resolve the issue:
 

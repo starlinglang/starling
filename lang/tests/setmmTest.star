@@ -1,4 +1,8 @@
-proof of 2p2e4 {
+replace { equals : = , provable : |- };
+
+2plus2 = ( 2 + 2 ) equals 4: provable;
+
+proof of 2plus2 {
     c2;
     c2;
     caddc;

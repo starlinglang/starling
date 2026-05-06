@@ -9,7 +9,7 @@
 const starlingGrammar = String.raw`
 Starling {
         Database = Outermost_scope_stmt+
-        Outermost_scope_stmt = import_stmt | Const | Replace | Disjoint | To_sub | Proof_block | Block | comment
+        Outermost_scope_stmt = Import_stmt | Const | Replace | Disjoint | To_sub | Proof_block | Block | comment
         Block_content = Disjoint | Block | Block_to_sub | comment
         Block = "block"  "{" Block_content+  "}"
         Block_to_sub = math_symbol  "="  Block_inner
@@ -28,7 +28,7 @@ Starling {
         VariableListItem = math_symbol  ":" math_symbol
         Disjoint = "distinct" NonemptyListOf<math_symbol, ","> ";"
         Const = "define" NonemptyListOf<math_symbol, ","> ";"
-        import_stmt = "import" "\"" importChar+ ";"
+        Import_stmt = "import" "\"" importChar+ "\"" ";"
         math_symbol = const_symbol+
         ReplaceCharacters = ReplaceCharacter+
         ReplaceCharacter = const_symbol | "=" | "\\" |  "'" |  "[" | "]" | "^" | "_"

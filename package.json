@@ -14,8 +14,7 @@
     "test": "npx vitest",
     "build": "parcel build --no-content-hash --target browser --no-source-maps &&  npx jsdoc -c jsdoc.json -d ide/docs",
     "build:lang": "parcel build --no-content-hash --target browser --no-source-maps",
-    "build:docs": "npx jsdoc -c jsdoc.json -d ide/docs",
-    "watch": "parcel watch"
+    "build:docs": "npx jsdoc -c jsdoc.json -d ide/docs"
   },
   "dependencies": {
     "checkmm": "^1.1.1",
@@ -32,15 +31,9 @@
   },
   "standard": {
     "ignore": [
-      "ide/analytics.js",
       "ide/docs/scripts",
       "ide/editor/src/lang.mjs",
       "ide/editor/src/verifier.js"
-    ]
-  },
-  "release": {
-    "branches": [
-      "main"
     ]
   },
   "targets": {

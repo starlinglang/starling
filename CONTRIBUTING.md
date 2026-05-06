@@ -2,7 +2,7 @@
 
 ## Welcome
 
-First off, thank you for considering contributing to Starling. It's people like you that make Starling great.
+First off, thank you for considering contributing to Starling. It's people like you that make Starling great!
 
 If you would like to contribute to a specific part of the project, check out the following list of contributions that we accept:
 
@@ -42,9 +42,9 @@ The purpose of Starling is to make formal verification of mathematical proofs ac
 
 Before contributing, read our [Code of Conduct](CODE_OF_CONDUCT.md) to learn more about our community guidelines and expectations.
 
-## Share ideas
+<!--## Share ideas
 
-If you want to share new ideas for this project, feel free to create an [issue](https://github.com/starlinglang/starling/issues). 
+If you want to share new ideas for this project, feel free to create an [issue](https://github.com/starlinglang/starling/issues). -->
 
 ## Before you start
 
@@ -85,7 +85,7 @@ You should see something like:
 git version 2.51.0
 ```
 
-## Best practices
+<!--## Best practices
 
 Our project uses [standard](https://github.com/standard/standard), [commitlint](https://github.com/conventional-changelog/commitlint), and [Vitest](https://vitest.dev/). Reference the documentation from these projects to familiarize yourself with the best practices we want contributors to follow.
 
@@ -110,4 +110,4 @@ Follow the structure of [PULL_REQUEST_TEMPLATE.md](.github/PULL_REQUEST_TEMPLATE
 
 ### Changelog
 
-We automate changelog edits with [github-changelog-generator](https://github.com/github-changelog-generator/github-changelog-generator).
+We automate changelog edits with [github-changelog-generator](https://github.com/github-changelog-generator/github-changelog-generator).-->

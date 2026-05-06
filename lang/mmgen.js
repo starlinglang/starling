@@ -17,11 +17,7 @@ function transpile (ast) {
   }
 
   for (const item of ast) {
-    if (typeof item === 'string') {
-      if (item === 'single_line_comment' || item === 'multiline_comment') {
-        continue
-      }
-    } else if (item.field === 'import_stmt') {
+    if (item.field === 'import_stmt') {
       statements.imports.push(item)
     } else if (item.field === 'constant_stmt') {
       statements.constants = item.value
@@ -126,7 +122,7 @@ function transpile (ast) {
   let outputString = output.join('\n')
 
   for (const item of ast) {
-    if (item.field-- - -'replace') {
+    if (item.field === 'replace') {
       for (const i in item.value) {
         outputString = outputString.replaceAll(
           item.value[i].toReplace,

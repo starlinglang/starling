@@ -7,7 +7,7 @@
       "lang/grammar.js",
       "lang/mmgen.js",
       "lang/syntaxtree.js",
-      "lang/index.js"
+      "lang/compiler.js"
     ],
     "includePattern": ".+\\.js(doc|x)?$",
     "excludePattern": "(^|\\/|\\\\)_"

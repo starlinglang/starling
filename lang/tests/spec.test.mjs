@@ -9,10 +9,10 @@ import { compile } from '../index.js'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
-const shortFilePath = path.join(__dirname, 'compiled_short.mm')
-const longFilePath = path.join(__dirname, 'compiled_long.mm')
+const shortFilePath = path.join(__dirname, 'compiledShort.mm')
+const longFilePath = path.join(__dirname, 'compiledLong.mm')
 const setmmPath = path.join(__dirname, 'set.mm')
-const setmmTestFilePath = path.join(__dirname, 'compiled_setmmtest.mm')
+const setmmTestFilePath = path.join(__dirname, 'compiledsetmmTest.mm')
 
 try {
   fs.writeFileSync(shortFilePath, compile(shortTest)[1])
