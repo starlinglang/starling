@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: syntaxtree.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: syntaxtree.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * This is an object containing semantic actions for the Starling grammar.
+ *
+ * https://ohmjs.org/docs/api-reference#semantic-actions
+ *
+ * @constant
+ */
+const actions = {
+  Database (stmts) {
+    return stmts.children.map((c) => c.makeAST())
+  },
+
+  Import_stmt (one, two, name, three, four) {
+    return { field: 'import_stmt', value: name.sourceString }
+  },
+  Const (one, list, semicolon) {
+    const stringConsts = list.asIteration().children.map((c) => c.sourceString)
+    return { field: 'constant_stmt', value: stringConsts }
+  },
+  Variable (one, list, three) {
+    const childAST = list.makeAST()
+    return childAST
+  },
+  VariableListItem (variable, two, type) {
+    const vari = variable.sourceString
+    const typ = type.sourceString
+    return { field: 'variable-stmt', variable: vari, type: typ }
+  },
+  Axiom (one, stmt, three, type, five) {
+    const axiomatic = stmt.sourceString
+    const typ = type.sourceString
+
+    return { field: 'axiom', statement: axiomatic, type: typ }
+  },
+  Theorem (statement, three, type, four) {
+    const stmt = statement.asIteration().children.map((c) => c.sourceString)
+    const ind = stmt.indexOf('axiom')
+    const typ = type.sourceString
+
+    let fld = 'axiom'
+
+    if (ind > -1) {
+      stmt.splice(ind, 1)
+    } else {
+      fld = 'theorem'
+    }
+    return { field: fld, statement: stmt, type: typ }
+  },
+  Essential_hyp (one, assumed, three, type, five) {
+    const assumption = assumed.sourceString
+    const typ = type.sourceString
+    const objet = { field: 'essential-stmt', statement: assumption, type: typ }
+    return objet
+  },
+  Disjoint (one, list, semicolon) {
+    return { field: 'disjoint', value: list.sourceString.split(',') }
+  },
+  To_sub (label, two, inner) {
+    const name = label.sourceString
+    const a = inner.makeAST()
+    return { label: name, inside: a }
+  },
+  Inner (inside) {
+    return inside.makeAST()
+  },
+  Proof_block (one, thmName, three, arr, five) {
+    const theorem = thmName.sourceString
+    const prf = arr.asIteration().children.map((c) => c.makeAST())
+    return { field: 'proof', value: theorem, proof: prf }
+  },
+  Proof_cell (name, semicolon) {
+    const nameI = name.sourceString
+    return nameI
+  },
+  Block (one, two, list, four) {
+    return {
+      field: 'block',
+      value: list.asIteration().children.map((c) => c.makeAST())
+    }
+  },
+  Block_inner (c) {
+    return c
+  },
+  Block_content (child) {
+    return child.makeAST()
+  },
+  Block_to_sub (label, two, inner) {
+    const name = label.sourceString
+    return {
+      label: name,
+      inside: inner.children.map((c) => c.makeAST())
+    }
+  },
+  Replace (one, two, list, four, five) {
+    return {
+      field: 'replace',
+      value: list.asIteration().children.map((c) => c.makeAST())
+    }
+  },
+  ReplaceListItem (star, colon, mm) {
+    return { toReplace: star.sourceString, replacement: mm.sourceString }
+  },
+  _terminal () {},
+  _iter (...children) {},
+  NonemptyListOf (one, two, three) {},
+  singleLineComment (one, two) {
+    return 'single_line_comment'
+  },
+  multiLineComment (one, two, three) {
+    return 'multiline_comment'
+  }
+}
+
+/**
+ * This function resolves references in the abstract syntax tree.
+ * @param {Array} ast
+ * @returns {Array}
+ */
+function resolveReferences (ast) {
+  const labelMap = {}
+
+  ast.forEach((item) => {
+    if (item.label) {
+      labelMap[item.label] = item
+    }
+  })
+
+  ast.forEach((item) => {
+    if (item.field === 'proof' &amp;&amp; typeof item.value === 'string') {
+      const label = item.value
+      if (labelMap[label]) {
+        item.value = labelMap[label]
+      }
+    }
+  })
+
+  return ast
+}
+
+export { actions, resolveReferences }
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#actions">actions</a></li><li><a href="global.html#compile">compile</a></li><li><a href="global.html#resolveReferences">resolveReferences</a></li><li><a href="global.html#starlingGrammar">starlingGrammar</a></li><li><a href="global.html#transpile">transpile</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Wed May 06 2026 19:16:47 GMT-0400 (Eastern Daylight Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

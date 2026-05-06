@@ -1,126 +1,140 @@
-let actions = {
-  Database(stmts) {
-    return stmts.children.map((c) => c.makeAST());
+/**
+ * This is an object containing semantic actions for the Starling grammar.
+ *
+ * https://ohmjs.org/docs/api-reference#semantic-actions
+ *
+ * @constant
+ */
+const actions = {
+  Database (stmts) {
+    return stmts.children.map((c) => c.makeAST())
   },
 
-  import_stmt(one, name, three, four, five) {
-    return { field: "import_stmt", value: name.sourceString };
+  Import_stmt (one, two, name, three, four) {
+    return { field: 'import_stmt', value: name.sourceString }
   },
-  Const(one, list, semicolon) {
-    let string_consts = list.asIteration().children.map((c) => c.sourceString);
-    return { field: "constant_stmt", value: string_consts };
+  Const (one, list, semicolon) {
+    const stringConsts = list.asIteration().children.map((c) => c.sourceString)
+    return { field: 'constant_stmt', value: stringConsts }
   },
-  Variable(one, list, three) {
-    let childAST = list.makeAST();
-    return childAST;
+  Variable (one, list, three) {
+    const childAST = list.makeAST()
+    return childAST
   },
-  VariableListItem(variable, two, type) {
-    let vari = variable.sourceString;
-    let typ = type.sourceString;
-    return { field: "variable-stmt", variable: vari, type: typ };
+  VariableListItem (variable, two, type) {
+    const vari = variable.sourceString
+    const typ = type.sourceString
+    return { field: 'variable-stmt', variable: vari, type: typ }
   },
-  Axiom(one, stmt, three, type, five) {
-    let axiomatic = stmt.sourceString;
-    let typ = type.sourceString;
+  Axiom (one, stmt, three, type, five) {
+    const axiomatic = stmt.sourceString
+    const typ = type.sourceString
 
-    return { field: "axiom", statement: axiomatic, type: typ };
+    return { field: 'axiom', statement: axiomatic, type: typ }
   },
-  Theorem(statement, three, type, four) {
-    let stmt = statement.asIteration().children.map((c) => c.sourceString);
-    let ind = stmt.indexOf("axiom");
-    let fld = "axiom";
+  Theorem (statement, three, type, four) {
+    const stmt = statement.asIteration().children.map((c) => c.sourceString)
+    const ind = stmt.indexOf('axiom')
+    const typ = type.sourceString
+
+    let fld = 'axiom'
 
     if (ind > -1) {
-      stmt.splice(ind, 1);
+      stmt.splice(ind, 1)
     } else {
-      fld = "theorem";
+      fld = 'theorem'
     }
-    let typ = type.sourceString;
-    return { field: fld, statement: stmt, type: typ };
+    return { field: fld, statement: stmt, type: typ }
   },
-  Essential_hyp(one, assumed, three, type, five) {
-    let assumption = assumed.sourceString;
-    let typ = type.sourceString;
-    let objet = { field: "essential-stmt", statement: assumption, type: typ };
-    return objet;
+  Essential_hyp (one, assumed, three, type, five) {
+    const assumption = assumed.sourceString
+    const typ = type.sourceString
+    const objet = { field: 'essential-stmt', statement: assumption, type: typ }
+    return objet
   },
-  Disjoint(one, list, semicolon) {
-    return { field: "disjoint", value: list.sourceString.split(",") };
+  Disjoint (one, list, semicolon) {
+    return { field: 'disjoint', value: list.sourceString.split(',') }
   },
-  To_sub(label, two, inner) {
-    let name = label.sourceString;
-    let a = inner.makeAST();
-    return { label: name, inside: a };
+  To_sub (label, two, inner) {
+    const name = label.sourceString
+    const a = inner.makeAST()
+    return { label: name, inside: a }
   },
-  Inner(inside) {
-    return inside.makeAST();
+  Inner (inside) {
+    return inside.makeAST()
   },
-  Proof_block(one, thm_name, three, proof_content_array, five) {
-    let theorem = thm_name.sourceString;
-    let prf = proof_content_array
-      .asIteration()
-      .children.map((c) => c.makeAST());
-    return { field: "proof", value: theorem, proof: prf };
+  Proof_block (one, thmName, three, arr, five) {
+    const theorem = thmName.sourceString
+    const prf = arr.asIteration().children.map((c) => c.makeAST())
+    return { field: 'proof', value: theorem, proof: prf }
   },
-  Proof_cell(name, semicolon) {
-    let name_i = name.sourceString;
-    return name_i;
+  Proof_cell (name, semicolon) {
+    const nameI = name.sourceString
+    return nameI
   },
-  Block(one, two, list, four) {
+  Block (one, two, list, four) {
     return {
-      field: "block",
-      value: list.asIteration().children.map((c) => c.makeAST()),
-    };
+      field: 'block',
+      value: list.asIteration().children.map((c) => c.makeAST())
+    }
   },
-  Block_inner(c) {
-    return c;
+  Block_inner (c) {
+    return c
   },
-  Block_content(child) {
-    return child.makeAST();
+  Block_content (child) {
+    return child.makeAST()
   },
-  Block_to_sub(label, two, inner) {
-    let name = label.sourceString;
+  Block_to_sub (label, two, inner) {
+    const name = label.sourceString
     return {
       label: name,
-      inside: inner.children.map((c) => c.makeAST()),
-    };
-  },
-  _terminal() {
-    return;
-  },
-  _iter(...children) {
-    return;
-  },
-  NonemptyListOf(one, two, three) {
-    return;
-  },
-  singleLineComment(one, two) {
-    return "single_line_comment";
-  },
-  multiLineComment(one, two, three) {
-    return "multiline_comment";
-  },
-};
-
-function resolveReferences(arr) {
-  const labelMap = {};
-
-  arr.forEach((item) => {
-    if (item.label) {
-      labelMap[item.label] = item;
+      inside: inner.children.map((c) => c.makeAST())
     }
-  });
-
-  arr.forEach((item) => {
-    if (item.field === "proof" && typeof item.value === "string") {
-      const label = item.value;
-      if (labelMap[label]) {
-        item.value = labelMap[label];
-      }
+  },
+  Replace (one, two, list, four, five) {
+    return {
+      field: 'replace',
+      value: list.asIteration().children.map((c) => c.makeAST())
     }
-  });
-
-  return arr;
+  },
+  ReplaceListItem (star, colon, mm) {
+    return { toReplace: star.sourceString, replacement: mm.sourceString }
+  },
+  _terminal () {},
+  _iter (...children) {},
+  NonemptyListOf (one, two, three) {},
+  singleLineComment (one, two) {
+    return 'single_line_comment'
+  },
+  multiLineComment (one, two, three) {
+    return 'multiline_comment'
+  }
 }
 
-module.exports = { actions, resolveReferences };
+/**
+ * This function resolves references in the abstract syntax tree.
+ * @param {Array} ast
+ * @returns {Array}
+ */
+function resolveReferences (ast) {
+  const labelMap = {}
+
+  ast.forEach((item) => {
+    if (item.label) {
+      labelMap[item.label] = item
+    }
+  })
+
+  ast.forEach((item) => {
+    if (item.field === 'proof' && typeof item.value === 'string') {
+      const label = item.value
+      if (labelMap[label]) {
+        item.value = labelMap[label]
+      }
+    }
+  })
+
+  return ast
+}
+
+export { actions, resolveReferences }

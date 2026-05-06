@@ -1,11 +1,11 @@
-package-lock.json
 node-modules/
 /node-modules
 node_modules
-*/package-lock.json
 */node-modules/
 */node-modules
 
+.parcel-cache
+.parcel-cache/*
 
 # Logs
 logs
@@ -19,6 +19,9 @@ lerna-debug.log*
 
 
 # Editor directories and files
+*/.zed/*
+*/.zed/
+*/.zed
 .vscode/*
 !.vscode/extensions.json
 .idea
@@ -28,3 +31,12 @@ lerna-debug.log*
 *.njsproj
 *.sln
 *.sw?
+
+# Metamath databases
+
+set.mm
+*/set.mm
+
+# Rust
+
+**/target

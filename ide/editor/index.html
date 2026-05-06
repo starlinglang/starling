@@ -2,319 +2,130 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8" />
-        <link
-            rel="icon"
-            href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⭐</text></svg>"
-        />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Starling IDE</title>
-        <meta
-            name="description"
-            content="Starling is a proof assistant designed for ease of use."
-        />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-        <link
-            href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
-            rel="stylesheet"
-        />
+        <title>⭐ Starling IDE</title>
         <style>
-            :root {
-                --color-bg: #f8f9fa;
-                --color-grid: #e0e3e8;
-                --color-primary: #303f9f; /* Deep Indigo */
-                --color-primary-light: #e8eaf6;
-                --color-text-main: #1a1a24;
-                --color-text-muted: #6b7280;
-                --color-border: #e5e7eb;
-                --color-white: #ffffff;
-                --nav-height: 56px;
-                --sidebar-width: 260px;
-                --font-main: "Space Grotesk", sans-serif;
-                --font-mono: "Courier New", Courier, monospace;
-            }
-            * {
-                box-sizing: border-box;
-                margin: 0;
-                padding: 0;
-            }
-            body {
-                font-family: var(--font-main);
-                background-color: var(--color-bg);
-                color: var(--color-text-main);
-                overflow: hidden;
-                height: 100vh;
-                width: 100vw;
+            html {
+                background-color: rgba(255, 240, 245, 0.125);
             }
             #top-nav {
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: var(--nav-height);
-                background: var(--color-white);
-                border-bottom: 1px solid var(--color-border);
                 display: flex;
-                align-items: center;
-                justify-content: space-between;
-                padding: 0 24px;
-                z-index: 100;
-            }
-            .brand {
-                font-size: 1.25rem;
-                font-weight: 700;
-                color: var(--color-primary);
-                letter-spacing: -0.02em;
-            }
-            .nav-links {
-                display: flex;
-                gap: 24px;
-            }
-            .nav-link {
-                font-size: 0.9rem;
-                font-weight: 500;
-                color: var(--color-text-muted);
-                text-decoration: none;
-                cursor: pointer;
-                transition: color 0.2s;
-            }
-            .nav-link:hover {
-                color: var(--color-primary);
-            }
-            #sidebar {
-                position: fixed;
-                top: var(--nav-height);
-                left: 0;
-                bottom: 0;
-                width: var(--sidebar-width);
-                background: rgba(255, 255, 255, 0.9);
-                backdrop-filter: blur(10px);
-                border-right: 1px solid var(--color-border);
-                z-index: 90;
-                padding: 20px;
-                overflow-y: auto;
-            }
-            .sidebar-section-title {
-                font-size: 0.75rem;
-                text-transform: uppercase;
-                letter-spacing: 0.05em;
-                color: var(--color-text-muted);
-                margin-bottom: 12px;
-                font-weight: 600;
-            }
-            .file-tree-item {
-                display: flex;
-                align-items: center;
-                padding: 8px 12px;
-                margin-bottom: 4px;
-                border-radius: 6px;
-                cursor: pointer;
-                font-size: 0.9rem;
-                color: var(--color-text-main);
-                transition: background 0.2s;
-            }
-            .file-tree-item:hover {
-                background: var(--color-primary-light);
-                color: var(--color-primary);
-            }
-            .file-tree-item.active {
-                background: var(--color-primary);
-                color: white;
-            }
-            .file-icon {
-                margin-right: 8px;
-                width: 16px;
-                height: 16px;
-                opacity: 0.7;
-            }
-            .tree-indent {
-                width: 16px;
-                display: inline-block;
-            }
-            #canvas-viewport {
-                position: fixed;
-                top: var(--nav-height);
-                left: var(--sidebar-width);
-                right: 0;
-                bottom: 0;
-                overflow: hidden;
-                cursor: grab;
-                background-image: radial-gradient(
-                    var(--color-grid) 1px,
-                    transparent 1px
-                );
-                background-size: 24px 24px;
-            }
-            #canvas-viewport:active {
-                cursor: grabbing;
-            }
-            #canvas-world {
-                position: absolute;
-                top: 0;
-                left: 0;
-                transform-origin: 0 0;
-            }
-            .file-container {
-                position: absolute;
-                width: 700px;
-                background: var(--color-white);
-                border: 1px solid var(--color-border);
-                border-radius: 12px;
-                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
-                display: flex;
-                flex-direction: column;
-                overflow: hidden;
-                transition: box-shadow 0.2s;
-            }
-            .file-container:hover {
-                box-shadow: 0 8px 30px rgba(48, 63, 159, 0.1);
-            }
-            .container-header {
-                height: 44px;
-                background: var(--color-primary);
-                color: white;
-                display: flex;
-                align-items: center;
-                padding: 0 16px;
-                cursor: grab;
-                user-select: none;
-                position: relative;
-            }
-            .container-header:active {
-                cursor: grabbing;
-            }
-            .container-title {
-                font-size: 0.9rem;
-                font-weight: 600;
-                flex-grow: 1;
-                display: flex;
-                align-items: center;
-                gap: 8px;
-                padding: 0 8px;
-            }
-            .window-controls {
-                display: flex;
-                align-items: center;
-                gap: 6px;
-            }
-            .window-controls.left {
-                margin-right: auto;
-            }
-            .window-controls.right {
-                margin-left: auto;
+                flex-direction: row;
+                gap: 35px;
+                margin-bottom: 20px;
             }
 
-            .tool-btn {
-                background: transparent;
-                border: none;
-                color: rgb(255, 255, 255);
+            button {
+                all: unset;
                 cursor: pointer;
-                font-size: 20px;
-                margin-bottom: 4px;
-                border-radius: 4px;
-                transition: all 0.2s;
-                font-family: inherit;
-                line-height: 1;
-            }
-            .tool-btn:hover:not(:disabled) {
-                color: white;
-                background: rgba(255, 255, 255, 0.15);
-            }
-            .tool-btn:disabled {
-                opacity: 0.5;
-                cursor: default;
             }
 
-            .delete-btn {
+            a:link,
+            button {
+                background-color: lavenderblush;
+                color: maroon;
+                border-radius: 5px;
+                font-size: 21px;
+                font-family: sans-serif;
+                border: darkslategray 1px solid;
+                padding: 7.5px;
+            }
+
+            a:link:hover,
+            button:hover {
+                background-color: maroon;
+                color: white;
+            }
+
+            pre {
+                background-color: rgba(255, 240, 245, 0.125);
+                color: darkslategray;
+                border-radius: 5px;
+                border: darkslategray 1px solid;
                 font-size: 18px;
-                cursor: pointer;
-                opacity: 0.8;
-                padding: 0 4px;
-                border-radius: 4px;
-                transition: all 0.2s;
-                line-height: 1;
-            }
-            .delete-btn:hover {
-                opacity: 1;
-                background: rgba(255, 255, 255, 0.2);
-                color: #ff6b6b;
-            }
-
-            .module {
-                border-top: 1px solid var(--color-border);
-                display: flex;
-                flex-direction: column;
-            }
-            .module-header {
-                padding: 8px 16px;
-                background: #f3f4f6;
-                font-size: 0.75rem;
-                font-weight: 600;
-                text-transform: uppercase;
-                letter-spacing: 0.05em;
-                color: var(--color-text-muted);
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-            }
-            .source-editor-container {
-                position: relative;
-            }
-            .source-editor {
-                padding: 16px;
-                font-family: var(--font-mono);
-                font-size: 0.85rem;
-                line-height: 1.6;
-                min-height: 200px;
-                color: #4b5563;
-                width: 100%;
-                border: none;
-                resize: vertical;
-                outline: none;
-                background: transparent;
+                padding: 20px;
             }
         </style>
     </head>
     <body>
-        <!-- Top Navigation -->
         <nav id="top-nav">
-            <div class="brand">Starling</div>
             <div class="nav-links">
-                <a href="../documentation.html" class="nav-link"
-                    >Documentation</a
-                >
-                <a
-                    href="index.html"
-                    class="nav-link"
-                    style="
-                        color: var(--color-primary);
-                        font-weight: 700;
-                        border-bottom: 2px solid var(--color-primary);
-                    "
-                    >New</a
-                >
-                <a id="download" class="nav-link">Download</a>
+                <a href="../docs/index.html" class="nav-link">Documentation</a>
+                <a href="index.html" class="nav-link">New</a>
+                <button id="verify" class="nav-link" type="button">
+                    Verify
+                </button>
             </div>
         </nav>
-        <!-- Sidebar -->
-        <aside id="sidebar">
-            <button
-                class="container-header"
-                style="border-radius: 12px"
-                id="newFile"
-            >
-                New File
-            </button>
-            <br />
-            <div class="sidebar-section-title">
-                <span style="margin-right: 6px">📂</span> Files
-            </div>
-            <div id="file-tree"></div>
-        </aside>
-        <div id="canvas-viewport">
-            <div id="canvas-world"></div>
-        </div>
-        <script src="stack.js"></script>
-        <script src="ui.js"></script>
+        <pre contenteditable>
+import "set.mm";
+replace { equals : = , provable : |- };
+
+2plus2 = ( 2 + 2 ) equals 4: provable;
+
+proof of 2plus2 {
+    c2;
+    c2;
+    caddc;
+    co;
+    c2;
+    c1;
+    c1;
+    caddc;
+    co;
+    caddc;
+    co;
+    c4;
+    c2;
+    c1;
+    c1;
+    caddc;
+    co;
+    c2;
+    caddc;
+    df-2;
+    oveq2i;
+    c4;
+    c3;
+    c1;
+    caddc;
+    co;
+    c2;
+    c1;
+    caddc;
+    co;
+    c1;
+    caddc;
+    co;
+    c2;
+    c1;
+    c1;
+    caddc;
+    co;
+    caddc;
+    co;
+    df-4;
+    c3;
+    c2;
+    c1;
+    caddc;
+    co;
+    c1;
+    caddc;
+    df-3;
+    oveq1i;
+    c2;
+    c1;
+    c1;
+    2cn;
+    ax-1cn;
+    ax-1cn;
+    addassi;
+    3eqtri;
+    eqtr4i;
+}
+</pre
+        >
+        <script src="src/work.js"></script>
     </body>
 </html>
